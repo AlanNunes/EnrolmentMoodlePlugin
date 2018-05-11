@@ -69,7 +69,7 @@ $categories = new Categories($conn);
         </div>
         <div class="form-row justify-content-center">
           <div class="form-group col-md-6">
-            <button type="button" class="btn btn-primary btn-block">Pronto !</button>
+            <button type="button" class="btn btn-primary btn-block" onclick="cadastrarMatriz()">Pronto !</button>
           </div>
         </div>
       </form>
@@ -161,17 +161,17 @@ $categories = new Categories($conn);
         type: "POST",
         dataType: "json",
         url: "../php/grades/Controller.php",
-        data: 'action':'cadastrarMatriz', data,
+        data: {'action':'registerGrade', "data":data},
         success: function(data) {
           console.log(data);
           if(data.erro){
-
+            console.log(data);
           }else{
             console.log(data);
           }
         },
         error: function(data){
-          console.log('erro: '+data);
+          console.log(data);
         }
       });
   }
