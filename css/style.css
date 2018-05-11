@@ -1,0 +1,28 @@
+.categorias {
+	width: 70%;
+}
+
+.conteudo {
+	width: 70%;
+}
+
+.cursos {
+
+}
+
+.cursos .item {
+	min-width: 100px;
+	min-height: 10px;
+	border: 1px solid black;
+	border-radius: 5px;
+	margin: 10px;
+	padding: 10px;
+}
+
+.cursos .item {
+	cursor: all-scroll;
+}
+
+.cursos .curso {
+	padding: 10px;
+}

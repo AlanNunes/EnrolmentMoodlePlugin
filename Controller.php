@@ -19,7 +19,7 @@ $infoEnrolment = $enrolment->getEnrolmentInfo($shortnameCourse);
 var_dump($infoEnrolment);
 $today = time();
 
-if( ($today - $infoEnrolment["timecreated"]) > 60){
+if( ($today - $infoEnrolment["timecreated"]) > 60*5){
   $enrolment->conn = $connExternal;
   $enrolment->enrolInNextCourse('jacare', $shortnameCourse);
 }
