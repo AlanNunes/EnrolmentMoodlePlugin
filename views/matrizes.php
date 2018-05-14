@@ -10,7 +10,7 @@ $conn = $db->getConnection();
 $categories = new Categories($conn);
 ?>
 <!doctype html>
-<html lang="en">
+<html lang="pt">
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -33,8 +33,8 @@ $categories = new Categories($conn);
       <form>
         <div class="form-row justify-content-center">
           <div class="form-group col-md-6">
-              <label for="nome-matriz">Nome da Matriz:</label>
-              <input type="text" class="form-control" id="nome-matriz" placeholder="Ex.: ENG PROD 2018.1">
+              <label for="nomeMatriz">Nome da Matriz:</label>
+              <input type="text" class="form-control" id="nomeMatriz" placeholder="Ex.: Sistemas de Informação (2018)">
           </div>
         </div>
         <div class="form-row justify-content-center">
@@ -76,6 +76,27 @@ $categories = new Categories($conn);
     <!-- </div>
   </div> -->
   <!-- </div> -->
+
+  <!-- Modals of Feedbacks -->
+
+  <div class="modal fade" id="modal-feedback" tabindex="-1" role="dialog" aria-labelledby="title-modal-feedback" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="title-modal-feedback"></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" id="content-modal-feedback">
+        </div>
+        <div class="modal-footer" id="footer-modal-feedback">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- End Modals of Feedbacks -->
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -142,7 +163,7 @@ $categories = new Categories($conn);
   function getFormValues(){
     var ordem = getOrdemCursos();
     var data = {
-      "nomeMatriz":$("#nome-matriz").val(),
+      "nomeMatriz":$("#nomeMatriz").val(),
       "cursos":ordem
     };
 
@@ -159,18 +180,45 @@ $categories = new Categories($conn);
         url: "../php/grades/Controller.php",
         data: {'action':'registerGrade', "data":data},
         success: function(data) {
-          console.log(data);
+          $("input").removeClass("is-invalid");
+          $("input").addClass("is-valid");
+          $("select").removeClass("is-invalid");
+          $("select").addClass("is-valid");
           if(data.erro){
             console.log(data);
+            if(data.invalidFields){
+              for(i = 0; i < data.invalidFields.length; i++){
+                $("#"+data.invalidFields[i]).removeClass("is-valid");
+                $("#"+data.invalidFields[i]).addClass("is-invalid");
+              }
+            }
           }else{
             console.log(data);
           }
+          showFeedbackModal("Cadastro de Matrizes", data.description, "Beleza !", "btn btn-primary", [{name: "data-dismiss", value: "modal"}]);
         },
         error: function(data){
           console.log(data);
         }
       });
   }
+
+    // Function that shows a feedback to the user, inner a modal layout
+      function showFeedbackModal(titulo, conteudo, botaoConteudo, botaoClass, botaoAtributos){
+        $("#title-modal-feedback").html(titulo);
+        $("#content-modal-feedback").html(conteudo);
+        btn = document.createElement("button");
+        btn.innerHTML = botaoConteudo;
+        if(botaoClass) btn.className = botaoClass;
+        for(i = 0; i < botaoAtributos.length; i++){
+          botaoAtributos = botaoAtributos || [];
+          console.log(botaoAtributos[i].name);
+          btn.setAttribute(botaoAtributos[i].name, botaoAtributos[i].value);
+        }
+        $("#footer-modal-feedback").html(btn);
+        $("#modal-feedback").modal('show');
+      }
+    // Fim Function
 
   // Funções para mover cursos de uma div à outra, drag and drop
     function allowDrop(ev) {

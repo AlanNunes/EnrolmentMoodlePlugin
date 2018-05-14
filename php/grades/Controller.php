@@ -18,7 +18,7 @@ switch ($_POST["action"]) {
     registerGrade();
     break;
 
-  case 'listGrades':
+  case 'getGrades':
     listGrades();
     break;
 
@@ -31,15 +31,36 @@ function registerGrade(){
   if(isset($_POST["data"]) && !empty($_POST["data"])){
     $data = $_POST["data"];
 
-    $db = new DataBase("external_enrolment");
-    $conn = $db->getConnection();
+    // Verify fields
+      $invalidFields = array();
+      if(empty($data["nomeMatriz"])) array_push($invalidFields, "nomeMatriz");
+      if(empty($data["cursos"])) array_push($invalidFields, "cursos");
+    // End
+    if(!empty($invalidFields)){
+      echo json_encode(array("erro" => true, "description" => "Opa! Parece que você esqueceu de preencher algum campo. Dê uma olhadinha!", "invalidFields" => $invalidFields));
+    }else{
 
-    $grade = new Grades($conn);
-    $response = $grade->registerGrade($data);
+      $db = new DataBase("external_enrolment");
+      $conn = $db->getConnection();
 
-    echo json_encode($response);
+      $grade = new Grades($conn);
+      $response = $grade->registerGrade($data);
+
+      echo json_encode($response);
+    }
   }else{
     echo json_encode(array("erro" => true, "description" => "It's missing data. Check if all the fields are filled"));
   }
+}
+
+
+function getGrades(){
+  $db = new DataBase("external_enrolment");
+  $conn = $db->getConnection();
+
+  $grade = new Grades($conn);
+  $response = $grade->getGrades();
+
+  echo json_encode($response);
 }
  ?>

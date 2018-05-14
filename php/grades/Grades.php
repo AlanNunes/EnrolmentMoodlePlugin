@@ -17,10 +17,9 @@ Class Grades {
     $this->conn = $conn;
   }
 
-  // This method return all grades and all courses relationed to it
+  // This method return all grades(matrizes)
   public function getGrades(){
-    $sql = "SELECT mat.id as idMat, mat.nome as nomeMat, m.matriz as matriz, m.shortnamecourse as idCourse, m.sortorder FROM matrizes mat
-    INNER JOIN modulos m ON mat.id = m.matriz";
+    $sql = "SELECT * FROM matrizes";
     $result = $this->conn->query($sql);
     $grades;
     if($result->num_rows > 0){
@@ -53,12 +52,12 @@ Class Grades {
       }
       // Execute the multi query
       if($this->conn->multi_query($sqlModulos)){
-        return array("erro" => false, "description" => "Grade and courses were created successfully.");
+        return array("erro" => false, "description" => "Sua matriz foi criada com sucesso !");
       }else{
-        return array("erro" => true, "description" => "Grade was created but courses weren't inserted into the grade.");
+        return array("erro" => true, "description" => "A matriz foi criada com sucesso. Porém os cursos relacionados a ela não foram inseridos na mesma.");
       }
     }else{
-      return array("erro" => true, "description" => "Grade was not created.");
+      return array("erro" => true, "description" => "Já existe uma matriz com este nome, por favor, escolha outro.");
     }
   }
 }
