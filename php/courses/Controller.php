@@ -1,4 +1,12 @@
 <?php
+/**
+ * Created on ??/05/2018
+ *
+ * @category   Controller of Courses
+ * @author     Alan Nunes da Silva <alann.625@gmail.com>
+ * @author     Gustavo de Mello Brandão <sm70plus@gmail.com>
+ * @copyright  2018 Dual Dev
+ */
 require_once('Courses.php');
 require_once('../database/DataBase.php');
 

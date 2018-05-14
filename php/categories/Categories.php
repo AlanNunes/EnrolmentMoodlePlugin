@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * Created on ??/05/2018
+ *
+ * @category   Categories
+ * @author     Alan Nunes da Silva <alann.625@gmail.com>
+ * @author     Gustavo de Mello Brandão <sm70plus@gmail.com>
+ * @copyright  2018 Dual Dev
+ */
 Class Categories {
   private $id;
   private $name;

@@ -1,4 +1,12 @@
 <?php
+/**
+ * Created on ??/05/2018
+ *
+ * @category   Controller of Grades
+ * @author     Alan Nunes da Silva <alann.625@gmail.com>
+ * @author     Gustavo de Mello Brandão <sm70plus@gmail.com>
+ * @copyright  2018 Dual Dev
+ */
 require_once('../categories/Categories.php');
 require_once('../courses/Courses.php');
 require_once('../database/DataBase.php');
@@ -31,7 +39,7 @@ function registerGrade(){
 
     echo json_encode($response);
   }else{
-    echo json_encode(array("erro" => true, "description" => "Missing data"));
+    echo json_encode(array("erro" => true, "description" => "It's missing data. Check if all the fields are filled"));
   }
 }
  ?>

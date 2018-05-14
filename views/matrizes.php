@@ -141,13 +141,9 @@ $categories = new Categories($conn);
   // Método que retorna todos os dados do formulário
   function getFormValues(){
     var ordem = getOrdemCursos();
-    var campos = {
-      "nome-matriz":$("#nome-matriz").val(),
-      "curso":$("#cursos").val()
-    };
     var data = {
-      "campos":campos,
-      "ordem-matriz":ordem
+      "nomeMatriz":$("#nome-matriz").val(),
+      "cursos":ordem
     };
 
     return data;
@@ -156,7 +152,7 @@ $categories = new Categories($conn);
   // Função responsável por cadastrar uma nova matriz
   function cadastrarMatriz(){
     var data = getFormValues();
-    data = $(this).serialize() + "&" + $.param(data);
+    // data = $(this).serialize() + "&" + $.param(data);
       $.ajax({
         type: "POST",
         dataType: "json",
