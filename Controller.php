@@ -19,7 +19,7 @@ $dbMoodle = new DataBase("moodle");
 $connMoodle = $dbMoodle->getConnection();
 
 $enrolment = new Enrolments($connExternal);
-$shortnameCourse = $enrolment->getCurrentEnrolmentShortNameCourse('jacare');
+$shortnameCourse = $enrolment->getCurrentEnrolmentShortNameCourse('rosenclever');
 // Switch connection to 'Moodle'
 $enrolment->conn = $connMoodle;
 $infoEnrolment = $enrolment->getEnrolmentInfo($shortnameCourse);
@@ -27,8 +27,8 @@ $infoEnrolment = $enrolment->getEnrolmentInfo($shortnameCourse);
 var_dump($infoEnrolment);
 $today = time();
 
-if( ($today - $infoEnrolment["timecreated"]) > 60*5){
+if( ($today - $infoEnrolment["timecreated"]) > 60*1){
   $enrolment->conn = $connExternal;
-  $enrolment->enrolInNextCourse('jacare', $shortnameCourse);
+  $enrolment->enrolInNextCourse('rosenclever', $shortnameCourse);
 }
 ?>

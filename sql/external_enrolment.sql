@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: 15-Maio-2018 às 21:15
+-- Generation Time: 16-Maio-2018 às 21:11
 -- Versão do servidor: 5.7.14
 -- PHP Version: 7.0.10
 
@@ -43,6 +43,34 @@ INSERT INTO `courses` (`id`, `fullname`, `shortname`, `idnumber`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `cursos`
+--
+
+CREATE TABLE `cursos` (
+  `id` int(11) NOT NULL,
+  `nome` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Extraindo dados da tabela `cursos`
+--
+
+INSERT INTO `cursos` (`id`, `nome`) VALUES
+(8, 'Arquitetura e Urbanismo'),
+(4, 'Ciências Biológicas'),
+(9, 'Direito'),
+(2, 'Engenharia Civil'),
+(3, 'Engenharia Mecânica'),
+(11, 'Geografia'),
+(10, 'História'),
+(6, 'Letras'),
+(7, 'Recursos Humanos'),
+(5, 'Serviço Social'),
+(1, 'Sistemas de Informação');
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `enrolments`
 --
 
@@ -56,34 +84,25 @@ CREATE TABLE `enrolments` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `enrol_matriz`
---
-
-CREATE TABLE `enrol_matriz` (
-  `id` int(11) NOT NULL,
-  `matriz` int(11) NOT NULL,
-  `username` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
 -- Estrutura da tabela `matrizes`
 --
 
 CREATE TABLE `matrizes` (
   `id` int(11) NOT NULL,
-  `nome` varchar(100) DEFAULT NULL
+  `nome` varchar(100) DEFAULT NULL,
+  `curso` int(11) NOT NULL,
+  `ativo` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Extraindo dados da tabela `matrizes`
 --
 
-INSERT INTO `matrizes` (`id`, `nome`) VALUES
-(72, 'Engenharia Civil (2018)'),
-(71, 'Sistemas de Informação (2018)'),
-(75, 'Sistemas de Informação (2019)');
+INSERT INTO `matrizes` (`id`, `nome`, `curso`, `ativo`) VALUES
+(76, 'Sistemas de Informação 2018', 1, 1),
+(77, 'Engenharia Civil 2018', 2, 1),
+(78, 'Arquitetura e Urbanismo 2018', 8, 1),
+(79, 'Sistemas de Informação 2018.2', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -99,24 +118,6 @@ CREATE TABLE `modulos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Extraindo dados da tabela `modulos`
---
-
-INSERT INTO `modulos` (`id`, `matriz`, `sortorder`, `shortnamecourse`) VALUES
-(45, 71, 0, 'MD'),
-(46, 71, 1, 'PI'),
-(47, 71, 2, 'ADA'),
-(48, 71, 3, 'BDD'),
-(49, 71, 4, 'IA'),
-(50, 72, 0, 'MAT'),
-(51, 72, 1, 'FIS'),
-(52, 75, 0, 'ADA'),
-(53, 75, 1, 'BDD'),
-(54, 75, 2, 'MD'),
-(55, 75, 3, 'PI'),
-(56, 75, 4, 'IA');
-
---
 -- Indexes for dumped tables
 --
 
@@ -127,15 +128,16 @@ ALTER TABLE `courses`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `cursos`
+--
+ALTER TABLE `cursos`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `nome` (`nome`);
+
+--
 -- Indexes for table `enrolments`
 --
 ALTER TABLE `enrolments`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `enrol_matriz`
---
-ALTER TABLE `enrol_matriz`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -143,7 +145,8 @@ ALTER TABLE `enrol_matriz`
 --
 ALTER TABLE `matrizes`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `nome` (`nome`);
+  ADD UNIQUE KEY `nome` (`nome`),
+  ADD KEY `curso` (`curso`);
 
 --
 -- Indexes for table `modulos`
@@ -162,28 +165,34 @@ ALTER TABLE `modulos`
 ALTER TABLE `courses`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 --
+-- AUTO_INCREMENT for table `cursos`
+--
+ALTER TABLE `cursos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+--
 -- AUTO_INCREMENT for table `enrolments`
 --
 ALTER TABLE `enrolments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `enrol_matriz`
---
-ALTER TABLE `enrol_matriz`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 --
 -- AUTO_INCREMENT for table `matrizes`
 --
 ALTER TABLE `matrizes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=80;
 --
 -- AUTO_INCREMENT for table `modulos`
 --
 ALTER TABLE `modulos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Limitadores para a tabela `matrizes`
+--
+ALTER TABLE `matrizes`
+  ADD CONSTRAINT `matrizes_ibfk_1` FOREIGN KEY (`curso`) REFERENCES `cursos` (`id`);
 
 --
 -- Limitadores para a tabela `modulos`
