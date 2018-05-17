@@ -60,6 +60,20 @@ Class Grades {
       return array("erro" => true, "description" => "Já existe uma matriz com este nome, por favor, escolha outro.");
     }
   }
+
+  // Retorna a matriz que o aluno deve ser inscrito, de acordo com seu curso e modalidade
+  public function getMatrizByCourseAndModalidade($shortnamecourse, $modalidade){
+    $sql = "SELECT m.id FROM matrizes m INNER JOIN cursos c ON m.curso = c.id
+            INNER JOIN modalidades_de_cursos mc ON mc.id = m.modalidade
+              WHERE m.ativo = true AND c.shortname = '{$shortnamecourse}' AND mc.nome = '{$modalidade}'";
+    $result = $this->conn->query($sql);
+    if($result->num_rows > 0){
+      $matriz = $result->fetch_assoc();
+      return array("erro" => true, "description" => "Matriz encontrada", "matriz" => $matriz);
+    }else{
+      return array("erro" => true, "description" => "Nenhuma matriz foi encontrada", "more" => $this->conn->error);
+    }
+  }
 }
 
 ?>

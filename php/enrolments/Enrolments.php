@@ -66,5 +66,29 @@ Class Enrolments {
     }
     return 1;
   }
+
+  // This function returns all the students that are not subscribed in any couse
+  public function getStudentsNotSubscribedInAnyCourse(){
+    $sql = "select distinct username, lastname from moodle.mdl_user where mdl_user.id not in (select userid from moodle.mdl_user_enrolments)";
+    $result = $this->conn->query($sql);
+    if($result->num_rows > 0){
+      while($student = $result->fetch_assoc()){
+        $students[] = $student;
+      }
+      return array("erro" => false, "description" => "There is some students tha are not subscribed in any course.", "students" => $students);
+    }else{
+      return array("erro" => false, "description" => "All the students are at least subscribed in one course.", "students" => 0);
+    }
+  }
+
+  // Enrol a student in a course - in the external database
+  public function enrolStudentInCourse($username, $shortnamecourse, $matriz){
+    $sql = "INSERT INTO (shortnamecourse, username, shortnamerole, matriz) VALUES ('{$shortnamecourse}', '{$username}', 'DEFAULT',{$matriz})";
+    if($this->conn->query($sql)){
+      return array("erro" => false, "description" => "O aluno foi matriculado no curso com sucesso");
+    }else{
+      return array("erro" => true, "description" => "O aluno não foi matriculado no curso", "more" => $this->conn->error);
+    }
+  }
 }
 ?>
