@@ -66,23 +66,29 @@ foreach($studentsNotEnrolleds['students'] as $student){
   }
 }
 
+// Create an instance for students of Pós-Graduação
+$enrolmentsPosGraduacao = new EnrolmentsPosGraduacao($connExternal);
+$studentsPosGradExpiredTime = $enrolmentsPosGraduacao->getStudentsByTimeEnrolment(60*1);
+var_dump($studentsPosGradExpiredTime);
+
 // Just go into the IF scope if there is some students not enrolled in any course
-if($studentsNotEnrolleds){
-  // It switches the database connection to 'External Database'
-  $enrolments->conn = $connExternal;
-  // Get the current course that the student is enrolled
-  $shortnameCourse = $enrolments->getCurrentEnrolmentShortNameCourse('rosenclever');
-  // It switches the database connection to 'Moodle Database'
-  $enrolments->conn = $connMoodle;
-  $infoEnrolment = $enrolments->getEnrolmentInfo($shortnameCourse);
-
-  var_dump($infoEnrolment);
-  $today = time();
-
-  if( ($today - $infoEnrolment["timecreated"]) > 60*1){
+if($studentsPosGradExpiredTime['students']){
+  foreach($studentsPosGradExpiredTime['students'] as $student){
     // It switches the database connection to 'External Database'
     $enrolments->conn = $connExternal;
-    $enrolments->enrolInNextCourse('rosenclever', $shortnameCourse);
+    // Get the current course that the student is enrolled
+    // $shortnameCourse = $enrolments->getCurrentEnrolmentShortNameCourse($student['username']);
+    // It switches the database connection to 'Moodle Database'
+    // $enrolments->conn = $connMoodle;
+    // $infoEnrolment = $enrolments->getEnrolmentInfo($shortnameCourse);
+
+    // var_dump($infoEnrolment);
+    // $today = time();
+
+    // It switches the database connection to 'External Database'
+    // $enrolments->conn = $connExternal;
+    $enrolmentsPosGraduacao->enrolInNextCourse($student['username'], $student['shortnamecourse'], $student['matriz']);
+    exec('php C:\wamp\www\moodle\enrol\database\cli\sync.php');
   }
 }
 

@@ -43,30 +43,6 @@ Class Enrolments {
     return 1;
   }
 
-  // This method returns the 'shortname' of the next course that the user should be enrolled
-  public function getNextCourse($shortnameCourse){
-    $sql = "SELECT shortname FROM moodle.mdl_course WHERE sortorder < (SELECT sortorder FROM moodle.mdl_course WHERE shortname = '$shortnameCourse') AND shortname != 'UGB/FERP' ORDER BY sortorder DESC LIMIT 1";
-    $result = $this->conn->query($sql);
-    $row = $result->fetch_assoc();
-    return $row["shortname"];
-  }
-
-  public function enrolInNextCourse($username, $shortnameCourse){
-    $sql = "DELETE FROM enrolments WHERE username = '$username' AND shortnamecourse = '$shortnameCourse'";
-    if($this->conn->query($sql)){
-      echo "Student removed from: " . $shortnameCourse;
-      $shortnameCourseNext = $this->getNextCourse($shortnameCourse);
-      if(!empty($shortnameCourseNext)){
-        $sql = "INSERT INTO enrolments (shortnamecourse, username, shortnamerole) VALUES ('$shortnameCourseNext', '$username', DEFAULT)";
-        if($this->conn->query($sql)){
-          echo "Student added to: " . $shortnameCourseNext;
-        }
-      }
-      exec('php C:\wamp\www\moodle\enrol\database\cli\sync.php');
-    }
-    return 1;
-  }
-
   // This function returns all the students that are not subscribed in any couse
   public function getStudentsNotSubscribedInAnyCourse(){
     $sql = "select distinct username, lastname from moodle.mdl_user where mdl_user.id not in (select userid from moodle.mdl_user_enrolments)";
@@ -84,11 +60,77 @@ Class Enrolments {
   // Enrol a student in a course - in the external database
   // Matricula um aluno no banco de dados externo
   public function enrolStudentInCourse($username, $shortnamecourse, $matriz){
-    $sql = "INSERT INTO enrolments (shortnamecourse, username, shortnamerole, matriz) VALUES ('{$shortnamecourse}', '{$username}', DEFAULT, {$matriz})";
+    $timecreated = time();
+    $sql = "INSERT INTO enrolments (shortnamecourse, username, shortnamerole, matriz, timecreated) VALUES ('{$shortnamecourse}', '{$username}', DEFAULT, {$matriz}, {$timecreated})";
     if($this->conn->query($sql)){
       return array("erro" => false, "description" => "O aluno foi matriculado no curso com sucesso");
     }else{
       return array("erro" => true, "description" => "O aluno não foi matriculado no curso", "more" => $this->conn->error);
+    }
+  }
+
+  // This function gets all the students who are enrolled in a course for more than a time, specified in the paramater $time
+  // Esta função recolhe todos os alunos que estão matriculados em um curso por mais de um tempo específico, passado como parâmetro $time
+  public function getStudentsByTimeEnrolment($time){
+    $sql = "SELECT ue.timecreated, u.username FROM moodle.mdl_user_enrolments ue INNER JOIN moodle.mdl_enrol e ON ue.enrolid = e.id
+            INNER JOIN moodle.mdl_course c ON c.id = e.courseid INNER JOIN moodle.mdl_user u ON u.id = ue.userid
+              AND (unix_timestamp() - ue.timecreated) > {$time}";
+    $result = $this->conn->query($sql);
+    if($result->num_rows > 0){
+      while($row = $result->fetch_assoc()){
+        $students[] = $row;
+      }
+      return array("erro" => false, "description" => "Foram encontrado alunos com mais de {$time} segundos de incrição em um curso.", "students" => $students);
+    }else{
+      return array("erro" => false, "description" => "Nenhum aluno foi encontrado com mais {$time} segundos de inscrição em um curso.", "students" => 0);
+    }
+  }
+}
+
+// Class de matrículas da Pós-Graduação
+Class EnrolmentsPosGraduacao extends Enrolments{
+
+  // Pega todos os estudantes da Pós-Graduação EaD que estão matriculados em um curso há pelo menos {$time} de segundos
+  public function getStudentsByTimeEnrolment($time){
+    $sql = "SELECT * FROM enrolments en INNER JOIN matrizes ma ON ma.id = en.matriz INNER JOIN modalidades_de_cursos mo ON mo.id = ma.modalidade
+            AND mo.nome = 'EAD' AND (unix_timestamp() - en.timecreated) > {$time}";
+    $result = $this->conn->query($sql);
+    if($result->num_rows > 0){
+      while($row = $result->fetch_assoc()){
+        $students[] = $row;
+      }
+      return array("erro" => false, "description" => "Foram encontrados alunos da Pós-Graduação EaD com mais de {$time} segundos de incrição em um curso.", "students" => $students);
+    }else{
+      return array("erro" => false, "description" => "Nenhum aluno da Pós-Graduação EaD foi encontrado com mais {$time} segundos de inscrição em um curso.", "students" => 0);
+    }
+  }
+
+  // This method returns the 'shortname' of the next course that the user should be enrolled
+  public function getNextCourse($shortnamecourse, $matriz){
+    $sql = "SELECT * FROM modulos
+            WHERE matriz = {$matriz} AND sortorder > (SELECT sortorder FROM modulos WHERE matriz = {$matriz} AND shortnamecourse = '{$shortnamecourse}')
+            ORDER BY sortorder ASC LIMIT 1";
+    $result = $this->conn->query($sql);
+    $modulo = $result->fetch_assoc();
+    return $modulo["shortnamecourse"];
+  }
+
+  // Matricula o aluno no próximo course
+  // Deleta ele do atual e põe ele no próximo
+  public function enrolInNextCourse($username, $shortnamecourse, $matriz){
+    $sql = "DELETE FROM enrolments WHERE username = '{$username}' AND shortnamecourse = '{$shortnamecourse}' AND matriz = {$matriz}";
+    if($this->conn->query($sql)){
+      $shortnameNextCourse = $this->getNextCourse($shortnamecourse, $matriz);
+      $timecreated = time();
+      $sql = "INSERT INTO enrolments (shortnamecourse, username, shortnamerole, matriz, timecreated)
+              VALUES ('{$shortnameNextCourse}', '{$username}', DEFAULT, {$matriz}, {$timecreated})";
+      if($this->conn->query($sql)){
+        return array('erro' => false, 'description' => 'O aluno pulou para o próximo módulo com sucesso');
+      }else{
+        return array('erro' => true, 'description' => 'O aluno foi desinscrito do curso anterior porém não foi inscrito no posterior.', 'more' => $this->conn->erro);
+      }
+    }else{
+      return array('erro' => true, 'description' => 'O aluno não foi desinscrito do curso anterior e nem inscrito no posterior.', 'more' => $this->conn->erro);
     }
   }
 }
