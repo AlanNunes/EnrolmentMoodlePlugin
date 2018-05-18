@@ -10,6 +10,7 @@
 include_once('DataBase.php');
 include_once('Enrolments.php');
 include_once('../grades/Grades.php');
+include_once('../modulos/Modulos.php');
 
 // Connect to the External Database
 $dbExternal = new DataBase("external_enrolment");
@@ -33,17 +34,35 @@ foreach($studentsNotEnrolleds['students'] as $student){
   $lastname = $student['lastname'];
   // This conditional is necessary because moodle creates a user called 'guest' without a lastname
   if($student['lastname'] != ' '){
-    echo $student['username'];
     list($city, $course) = explode("-", $student['lastname']);
   }
   // End getting basic information
 
   // Check if the student is from 'Pós-Graduação'
   if(stripos($lastname, "POS-EAD")){
+    echo "<h1>Aluno é da Pós-EaD:</h1> <h3>{$student['username']}</h3>";
     $grades = new Grades($connExternal);
-    $matrizId = $grades->getMatrizByCourseAndModalidade($course, 'EAD')["matriz"];
+    $matrizResponse = $grades->getMatrizByCourseAndModalidade($course, 'EAD');
+    if(!$matrizResponse["erro"]){
+      $matriz = $matrizResponse['matriz']; // Pega a matriz que o aluno deve ser inscrito na matricula
+      // Create an instance of Modulos with connection to external database
+      $modulos = new Modulos($connExternal);
+      // Pega o 'shortname' do curso que aparece em primeiro na lista da matriz
+      $modulosResponse = $modulos->getShortNameCourseByGrade($matriz);
+      $shortnamecourse = $modulosResponse["shortnamecourse"];
+      // It switches the connection of enrolments from moodle to the external database's connection
+      $enrolments->conn = $connExternal;
+      // Enroll the student the course and catch the response of it's process
+      $enrolmentResponse = $enrolments->enrolStudentInCourse($username, $shortnamecourse, $matriz);
+      // Execute the sync.php
+      exec('php C:\wamp\www\moodle\enrol\database\cli\sync.php');
+      echo json_encode($enrolmentResponse);
+    }else{
+      // Houve algum erro ao buscar a matriz
+      // save in log the error
+    }
   }else{
-
+    // Alunos que não são da Pós-EaD
   }
 }
 

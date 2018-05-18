@@ -68,8 +68,9 @@ Class Grades {
               WHERE m.ativo = true AND c.shortname = '{$shortnamecourse}' AND mc.nome = '{$modalidade}'";
     $result = $this->conn->query($sql);
     if($result->num_rows > 0){
-      $matriz = $result->fetch_assoc();
-      return array("erro" => true, "description" => "Matriz encontrada", "matriz" => $matriz);
+      $row = $result->fetch_assoc();
+      $matriz = $row["id"];
+      return array("erro" => false, "description" => "Matriz encontrada", "matriz" => $matriz);
     }else{
       return array("erro" => true, "description" => "Nenhuma matriz foi encontrada", "more" => $this->conn->error);
     }

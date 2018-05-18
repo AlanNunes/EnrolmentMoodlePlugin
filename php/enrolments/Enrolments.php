@@ -82,8 +82,9 @@ Class Enrolments {
   }
 
   // Enrol a student in a course - in the external database
+  // Matricula um aluno no banco de dados externo
   public function enrolStudentInCourse($username, $shortnamecourse, $matriz){
-    $sql = "INSERT INTO (shortnamecourse, username, shortnamerole, matriz) VALUES ('{$shortnamecourse}', '{$username}', 'DEFAULT',{$matriz})";
+    $sql = "INSERT INTO enrolments (shortnamecourse, username, shortnamerole, matriz) VALUES ('{$shortnamecourse}', '{$username}', DEFAULT, {$matriz})";
     if($this->conn->query($sql)){
       return array("erro" => false, "description" => "O aluno foi matriculado no curso com sucesso");
     }else{
