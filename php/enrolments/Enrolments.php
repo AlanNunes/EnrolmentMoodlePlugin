@@ -111,8 +111,11 @@ Class EnrolmentsPosGraduacao extends Enrolments{
             WHERE matriz = {$matriz} AND sortorder > (SELECT sortorder FROM modulos WHERE matriz = {$matriz} AND shortnamecourse = '{$shortnamecourse}')
             ORDER BY sortorder ASC LIMIT 1";
     $result = $this->conn->query($sql);
-    $modulo = $result->fetch_assoc();
-    return $modulo["shortnamecourse"];
+    if($result->num_rows > 0){
+      $modulo = $result->fetch_assoc();
+      return $modulo["shortnamecourse"];
+    }
+    return 0;
   }
 
   // Matricula o aluno no próximo course
@@ -121,13 +124,17 @@ Class EnrolmentsPosGraduacao extends Enrolments{
     $sql = "DELETE FROM enrolments WHERE username = '{$username}' AND shortnamecourse = '{$shortnamecourse}' AND matriz = {$matriz}";
     if($this->conn->query($sql)){
       $shortnameNextCourse = $this->getNextCourse($shortnamecourse, $matriz);
-      $timecreated = time();
-      $sql = "INSERT INTO enrolments (shortnamecourse, username, shortnamerole, matriz, timecreated)
-              VALUES ('{$shortnameNextCourse}', '{$username}', DEFAULT, {$matriz}, {$timecreated})";
-      if($this->conn->query($sql)){
-        return array('erro' => false, 'description' => 'O aluno pulou para o próximo módulo com sucesso');
+      if($shortnameNextCourse){
+        $timecreated = time();
+        $sql = "INSERT INTO enrolments (shortnamecourse, username, shortnamerole, matriz, timecreated)
+                VALUES ('{$shortnameNextCourse}', '{$username}', DEFAULT, {$matriz}, {$timecreated})";
+        if($this->conn->query($sql)){
+          return array('erro' => false, 'description' => 'O aluno pulou para o próximo módulo com sucesso');
+        }else{
+          return array('erro' => true, 'description' => 'O aluno foi desinscrito do curso anterior porém não foi inscrito no posterior.', 'more' => $this->conn->erro);
+        }
       }else{
-        return array('erro' => true, 'description' => 'O aluno foi desinscrito do curso anterior porém não foi inscrito no posterior.', 'more' => $this->conn->erro);
+        return array('erro' => false, 'description' => 'O aluno finalizou o curso, não existe mais módulos para cadastrar o mesmo.');
       }
     }else{
       return array('erro' => true, 'description' => 'O aluno não foi desinscrito do curso anterior e nem inscrito no posterior.', 'more' => $this->conn->erro);

@@ -35,6 +35,7 @@ function registerGrade(){
       $invalidFields = array();
       if(empty($data["nomeMatriz"])) array_push($invalidFields, "nomeMatriz");
       if(empty($data["cursos"])) array_push($invalidFields, "cursos");
+      if(empty($data["modalidade"])) array_push($invalidFields, "modalidade");
     // End
     if(!empty($invalidFields)){
       echo json_encode(array("erro" => true, "description" => "Opa! Parece que você esqueceu de preencher algum campo. Dê uma olhadinha!", "invalidFields" => $invalidFields));
@@ -44,6 +45,7 @@ function registerGrade(){
       $conn = $db->getConnection();
 
       $grade = new Grades($conn);
+      $courses = new Courses($conn);
       $response = $grade->registerGrade($data);
 
       echo json_encode($response);

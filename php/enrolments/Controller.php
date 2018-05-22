@@ -87,6 +87,7 @@ if($studentsPosGradExpiredTime['students']){
 
     // It switches the database connection to 'External Database'
     // $enrolments->conn = $connExternal;
+    echo "<h1>shortnamecourse: ".$student['shortnamecourse']."</h1>";
     $enrolmentsPosGraduacao->enrolInNextCourse($student['username'], $student['shortnamecourse'], $student['matriz']);
     exec('php C:\wamp\www\moodle\enrol\database\cli\sync.php');
   }

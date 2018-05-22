@@ -1,13 +1,21 @@
 <?php
 require_once("../php/database/DataBase.php");
 require_once("../php/categories/Categories.php");
+require_once("../php/modalidades_de_cursos/Modalidades_de_Cursos.php");
 
-// Instance of database
+// Instance of Moodle database
 $db = new DataBase("moodle");
-$conn = $db->getConnection();
+$connMoodle = $db->getConnection();
+
+// Instance of External database
+$db = new DataBase("external_enrolment");
+$connExternal = $db->getConnection();
 
 // Instance of Categories
-$categories = new Categories($conn);
+$categories = new Categories($connMoodle);
+
+// Instance of Modalidades de Cursos
+$modalidades = new Modalidades_de_Cursos($connExternal);
 ?>
 <!doctype html>
 <html lang="pt">
@@ -39,22 +47,27 @@ $categories = new Categories($conn);
         </div>
         <div class="form-row justify-content-center">
           <div class="form-group col-md-6">
-            <label for="cursos">Cursos:</label>
-            <select id="cursos" class="form-control" onchange=getCoursesByCategory(this.value)>
-              <option value="-1">(Selecione)</option>
-              <?php
-                $categoriesArray = $categories->getCategories();
-                if(!$categoriesArray["erro"]){
-                  $categoriesArray = $categoriesArray["categories"];
-                  $size = sizeof($categoriesArray);
-                  $i = 0;
-                  for($i; $i < $size; $i++){
-                    $id = $categoriesArray[$i]["id"];
-                    $name = $categoriesArray[$i]["name"];
-                    echo "<option value='{$id}'>{$name}</option>";
+              <label for="modalidade">Modalidade:</label>
+              <select class="form-control" id="modalidade">
+                <option value=''>(Selecione)</option>
+                <?php
+                  $response = $modalidades->getModalidades();
+                  if($response['modalidades']){
+                    foreach ($response['modalidades'] as $modalidade) {
+                      $id = $modalidade['id'];
+                      $nome = $modalidade['nome'];
+                      echo "<option value='{$id}'>{$nome}</option>";
+                    }
                   }
-                }
-              ?>
+                 ?>
+              </select>
+          </div>
+        </div>
+        <div class="form-row justify-content-center">
+          <div class="form-group col-md-6">
+            <label for="cursos">Cursos:</label>
+            <select id="cursos" class="form-control" onchange=getCursosAndPeriodosByCategories(this.value)>
+              <option value=''>(Selecione)</option>
             </select>
           </div>
         </div>
@@ -106,39 +119,74 @@ $categories = new Categories($conn);
   </body>
   <script>
   $(document).ready(function(){
-
+    getCursosCategories();
   });
-  function getCoursesByCategory(id){
+
+  // Lista todas as categorias de uma determinada modalidade
+  function getCursosCategories(){
+    document.getElementById("cursos").innerHTML = '';
+    var data = {
+      "action": "getCursosCategories"
+    };
+    data = $(this).serialize() + "&" + $.param(data);
+      $.ajax({
+        type: "POST",
+        dataType: "json",
+        url: "../php/categories/Controller.php",
+        data: data,
+        success: function(data) {
+          console.log(data);
+          if(!data.erro){
+            cursos = data.cursos;
+            size = cursos.length;
+            for(i = 0; i < size; i++){
+              opt = document.createElement('option');
+              opt.setAttribute('value', cursos[i].id);
+              opt.setAttribute('data-idnumber', cursos[i].idnumber);
+              nome = document.createTextNode(cursos[i].name);
+              opt.appendChild(nome);
+              document.getElementById("cursos").appendChild(opt);
+            }
+          }
+        },
+        error: function(data){
+          console.log('erro:');
+          console.log(data);
+        }
+      });
+  }
+  function getCursosAndPeriodosByCategories(id){
     document.getElementById("lista_de_cursos").innerHTML = '';
     var data = {
-      "action": "getCoursesByCategory",
+      "action": "getCursosAndPeriodosByCategories",
       "idCategory": id
     };
     data = $(this).serialize() + "&" + $.param(data);
       $.ajax({
         type: "POST",
         dataType: "json",
-        url: "../php/courses/Controller.php",
+        url: "../php/categories/Controller.php",
         data: data,
         success: function(data) {
           console.log(data);
           if(!data.erro){
-            courses = data.courses;
-            console.log(courses);
-            size = courses.length;
-            for(i = 0; i < size; i++){
-              item = document.createElement("div");
-              item.setAttribute("class", "item");
-              item.setAttribute("ondrop", "drop(event)");
-              item.setAttribute("ondragover", "allowDrop(event)");
-              item.setAttribute("ondragstart", "drag(event)");
-              item.setAttribute("draggable", "true");
-              item.setAttribute("id", courses[i].shortname);
-              nome = document.createTextNode(courses[i].fullname);
-              item.appendChild(nome);
-              item.data= courses[i].shortname;
-              document.getElementById("lista_de_cursos").appendChild(item);
-            }
+            console.log(groupCoursesByPeriodos(data.periodos));
+            // courses = data.courses;
+            // console.log(courses);
+            // size = courses.length;
+            // for(i = 0; i < size; i++){
+            //   item = document.createElement("div");
+            //   item.setAttribute("class", "item");
+            //   item.setAttribute("ondrop", "drop(event)");
+            //   item.setAttribute("ondragover", "allowDrop(event)");
+            //   item.setAttribute("ondragstart", "drag(event)");
+            //   item.setAttribute("draggable", "true");
+            //   item.setAttribute("id", courses[i].shortname);
+            //   nome = document.createTextNode(courses[i].fullname);
+            //   item.appendChild(nome);
+            //   item.data= courses[i].shortname;
+            //   document.getElementById("lista_de_cursos").appendChild(item);
+            // }
           }
         },
         error: function(data){
@@ -164,6 +212,7 @@ $categories = new Categories($conn);
     var ordem = getOrdemCursos();
     var data = {
       "nomeMatriz":$("#nomeMatriz").val(),
+      "modalidade":$("#modalidade").val(),
       "cursos":ordem
     };
 
@@ -219,6 +268,18 @@ $categories = new Categories($conn);
         $("#modal-feedback").modal('show');
       }
     // Fim Function
+
+    function listCoursesByPeriodos(periodos){
+      size = (periodos.length)-1;
+      for(i = 0; i < size; i++){
+        if(periodos[i].id == periodos[i+1].id){
+          
+        }else{
+
+        }
+      }
+      return periodosGrouped;
+    }
 
   // Funções para mover cursos de uma div à outra, drag and drop
     function allowDrop(ev) {

@@ -30,6 +30,16 @@ Class Courses {
       }
       return array("erro" => true, "description" => "The method should have returned some course", "courses" => $courses);
   }
+
+  // Creates a new course and return a load of information
+  public function registerCourse($name, $shortname){
+    $sql = "INSERT INTO cursos (nome, shortname) VALUES ('{$name}', '{$shortname}')";
+    if($this->conn->query($sql)){
+      return array('erro' => false, 'description' => 'The course was successfully registered', 'id' => $this->conn->insert_id);
+    }else{
+      return array('erro' => true, 'description' => 'The query wasnt executed successfully', 'more' => $this->conn->error);
+    }
+  }
 }
 
 ?>

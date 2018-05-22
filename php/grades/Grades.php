@@ -37,6 +37,7 @@ Class Grades {
   public function registerGrade($data){
     $cursos = $data["cursos"]; // Gets all the courses, it's already in order
     $nomeMatriz = $data["nomeMatriz"]; // Gets the grade's name
+    $modalidade = $data["modalidade"]; // Gets the grade's modalidade
     $sqlNewGrade = "INSERT INTO matrizes (nome) VALUES ('{$nomeMatriz}')"; // Sql to insert a new Grade(matriz)
     if($this->conn->query($sqlNewGrade)){
       $idGrade = $this->conn->insert_id; // Gets the id of the grade(matriz, grade curricular) that was created
@@ -45,7 +46,8 @@ Class Grades {
         $sortorder = $i; // Sets the number order
         $shortname = $cursos[$i]; // Sets the shortname of the course
         if($i == 0){
-          $sqlModulos = "INSERT INTO modulos (matriz, sortorder, shortnamecourse) VALUES ({$idGrade}, {$sortorder}, '{$shortname}')";
+          $sqlModulos = "INSERT INTO modulos (matriz, sortorder, shortnamecourse, ativo, modalidade)
+                          VALUES ({$idGrade}, {$sortorder}, '{$shortname}')";
         }else{
           $sqlModulos .= ",({$idGrade}, {$sortorder}, '{$shortname}')";
         }
