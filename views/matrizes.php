@@ -170,7 +170,7 @@ $modalidades = new Modalidades_de_Cursos($connExternal);
         success: function(data) {
           console.log(data);
           if(!data.erro){
-            console.log(groupCoursesByPeriodos(data.periodos));
+            console.log(listPeriodosAndCursos(data.periodos));
             // courses = data.courses;
             // console.log(courses);
             // size = courses.length;
@@ -198,13 +198,11 @@ $modalidades = new Modalidades_de_Cursos($connExternal);
 
   // Método que retorna a ordem dos cursos com o shortname
   function getOrdemCursos(){
-    cursos = document.getElementById("lista_de_cursos").childNodes;
-    size = cursos.length;
-    ordem = [size];
-    for(i = 0; i < size; i++){
-      ordem[i] = cursos[i].id;
-    }
-    return ordem;
+    // Pega todas as divs de Períodos, dentro delas estão os courses - disciplinas
+    periodos = document.getElementById("lista_de_cursos").childNodes;
+    periodosSize = periodos.length;
+
+    return periodosSize;
   }
 
   // Método que retorna todos os dados do formulário
@@ -269,16 +267,43 @@ $modalidades = new Modalidades_de_Cursos($connExternal);
       }
     // Fim Function
 
-    function listCoursesByPeriodos(periodos){
-      size = (periodos.length)-1;
+    function listPeriodosAndCursos(periodos){
+      size = periodos.length;
+      div = document.createElement('div');
+      label = document.createElement('label');
+      label.setAttribute('for', periodos[0].shortname);
+      texto = document.createTextNode(periodos[0].categoryname);
+      label.appendChild(texto);
+      div.appendChild(label);
       for(i = 0; i < size; i++){
-        if(periodos[i].id == periodos[i+1].id){
-          
-        }else{
-
+        try{
+          item = document.createElement("div");
+          item.setAttribute("class", "item");
+          item.setAttribute("ondrop", "drop(event)");
+          item.setAttribute("ondragover", "allowDrop(event)");
+          item.setAttribute("ondragstart", "drag(event)");
+          item.setAttribute("draggable", "true");
+          item.setAttribute("id", periodos[i].idcourse);
+          nome = document.createTextNode(periodos[i].fullname);
+          item.appendChild(nome);
+          item.data= periodos[i].shortname;
+          div.appendChild(item);
+          if(periodos[i].categoryid == periodos[i+1].categoryid){
+            console.log('IF');
+          }else{
+            console.log('ELSE: '+periodos[i].fullname);
+            div = document.createElement('div');
+            label = document.createElement('label');
+            label.setAttribute('for', periodos[i+1].shortname);
+            texto = document.createTextNode(periodos[i+1].categoryname);
+            label.appendChild(texto);
+            div.appendChild(label);
+          }
+          document.getElementById('lista_de_cursos').appendChild(div);
+        }catch(e){
+          console.log(e);
         }
       }
-      return periodosGrouped;
     }
 
   // Funções para mover cursos de uma div à outra, drag and drop
