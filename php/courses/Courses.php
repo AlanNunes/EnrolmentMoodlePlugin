@@ -40,6 +40,19 @@ Class Courses {
       return array('erro' => true, 'description' => 'The query wasnt executed successfully', 'more' => $this->conn->error);
     }
   }
+
+  // Busca o id do curso com o shortname passado, e retorna seus respectivos valores
+  public function getCourseIdByShortName($shortname){
+    $sql = "SELECT id FROM cursos WHERE shortname = '{$shortname}'";
+    $result = $this->conn->query($sql);
+    if($result->num_rows > 0){
+      $row = $result->fetch_assoc();
+      $id = $row['id'];
+      return array('erro' => false, 'description' => 'O curso id do curso {$shortname} foi encontrado, {$id}.', 'id' => $id);
+    }else{
+      return array('erro' => true, 'description' => 'Nenhum curso foi encontrado', 'more' => $this->conn->error);
+    }
+  }
 }
 
 ?>

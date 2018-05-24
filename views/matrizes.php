@@ -201,17 +201,27 @@ $modalidades = new Modalidades_de_Cursos($connExternal);
     // Pega todas as divs de Períodos, dentro delas estão os courses - disciplinas
     periodos = document.getElementById("lista_de_cursos").childNodes;
     periodosSize = periodos.length;
-
-    return periodosSize;
+    cursosOrdem = new Array();
+    for( i = 0; i < periodosSize; i++ ){
+      cursos = periodos[i].childNodes;
+      cursosSize = cursos.length;
+      cursosOrdem[i] = new Array();
+      // O j começa no 1 porque sempre tem uma label na posição 1, é padrão
+      for( j = 1; j < cursosSize; j++ ){
+        cursosOrdem[i].push(cursos[j].data);
+      }
+    }
+    return cursosOrdem;
   }
 
   // Método que retorna todos os dados do formulário
   function getFormValues(){
-    var ordem = getOrdemCursos();
+    idNumber = document.getElementById('cursos').item(document.getElementById('cursos').selectedIndex).dataset.idnumber;
     var data = {
       "nomeMatriz":$("#nomeMatriz").val(),
       "modalidade":$("#modalidade").val(),
-      "cursos":ordem
+      "cursos":getOrdemCursos(),
+      "categoryIdNumber":idNumber
     };
 
     return data;
