@@ -30,6 +30,21 @@ Class Modulos {
       return array('erro' => true, 'description' => 'Modules were not found.');
     }
   }
+
+  // Pega todos os módulos referentes à matriz
+  public function getModulosByMatrizId($id){
+    $sql = "SELECT shortnamecourse FROM modulos WHERE matriz = {$id}";
+    $result = $this->conn->query($sql);
+    if($result->num_rows > 0){
+      $modulos = [];
+      while($row = $result->fetch_assoc()){
+        array_push($modulos, $row['shortnamecourse']);
+      }
+      return array('erro' => false, 'description' => 'Os módulos foram encontrados.', 'modulos' => $modulos);
+    }else{
+      return array('erro' => true, 'description' => 'Nenhum módulo foi encontrado referente à matriz {$id}.', 'more' => $this->conn->error);
+    }
+  }
 }
 
 ?>

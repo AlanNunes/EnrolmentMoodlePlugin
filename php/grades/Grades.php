@@ -70,12 +70,16 @@ Class Grades {
             INNER JOIN modalidades_de_cursos mc ON mc.id = m.modalidade
               WHERE m.ativo = true AND c.shortname = '{$shortnamecourse}' AND mc.nome = '{$modalidade}'";
     $result = $this->conn->query($sql);
-    if($result->num_rows > 0){
-      $row = $result->fetch_assoc();
-      $matriz = $row["id"];
-      return array("erro" => false, "description" => "Matriz encontrada", "matriz" => $matriz);
+    if($result){
+      if($result->num_rows > 0){
+        $row = $result->fetch_assoc();
+        $matriz = $row["id"];
+        return array("erro" => false, "description" => "Matriz encontrada", "matriz" => $matriz);
+      }else{
+        return array("erro" => true, "description" => "Nenhuma matriz foi encontrada", "more" => $this->conn->error);
+      }
     }else{
-      return array("erro" => true, "description" => "Nenhuma matriz foi encontrada", "more" => $this->conn->error);
+      return array("erro" => true, "description" => "Erro desconhecido", "more" => $this->conn->error);
     }
   }
 }

@@ -85,6 +85,23 @@ Class Enrolments {
       return array("erro" => false, "description" => "Nenhum aluno foi encontrado com mais {$time} segundos de inscrição em um curso.", "students" => 0);
     }
   }
+
+  // Matricula o aluno em todos os módulos passados na array, o módulo irá ser identificado por shortname
+  public function enrolAlunoByModulosShortName($username, $modulos, $matriz){
+    $size = sizeof($modulos);
+    $sql = "";
+    for( $i = 0; $i < $size; $i++ ){
+      $timecreated = time();
+      $shortnamecourse = $modulos[$i];
+      $sql .= "INSERT INTO enrolments (shortnamecourse, username, shortnamerole, matriz, timecreated)
+                VALUES ('{$shortnamecourse}', '{$username}', 'student', {$matriz}, {$timecreated});";
+    }
+    if($this->conn->multi_query($sql)){
+      return array("erro" => false, "description" => "O aluno '{$username}' foi matriculado com sucesso nas disciplinas(courses), referente à matriz '{$matriz}'");
+    }else{
+      return array("erro" => true, "description" => "O aluno '{$username}' não foi matriculado nas disciplinas(courses), referente à matriz '{$matriz}'", "more" => $this->conn->error);
+    }
+  }
 }
 
 // Class de matrículas da Pós-Graduação
@@ -95,13 +112,17 @@ Class EnrolmentsPosGraduacao extends Enrolments{
     $sql = "SELECT * FROM enrolments en INNER JOIN matrizes ma ON ma.id = en.matriz INNER JOIN modalidades_de_cursos mo ON mo.id = ma.modalidade
             AND mo.nome = 'EAD' AND (unix_timestamp() - en.timecreated) > {$time}";
     $result = $this->conn->query($sql);
-    if($result->num_rows > 0){
-      while($row = $result->fetch_assoc()){
-        $students[] = $row;
+    if($result){
+      if($result->num_rows > 0){
+        while($row = $result->fetch_assoc()){
+          $students[] = $row;
+        }
+        return array("erro" => false, "description" => "Foram encontrados alunos da Pós-Graduação EaD com mais de {$time} segundos de incrição em um curso.", "students" => $students);
+      }else{
+        return array("erro" => false, "description" => "Nenhum aluno da Pós-Graduação EaD foi encontrado com mais {$time} segundos de inscrição em um curso.", "students" => 0);
       }
-      return array("erro" => false, "description" => "Foram encontrados alunos da Pós-Graduação EaD com mais de {$time} segundos de incrição em um curso.", "students" => $students);
     }else{
-      return array("erro" => false, "description" => "Nenhum aluno da Pós-Graduação EaD foi encontrado com mais {$time} segundos de inscrição em um curso.", "students" => 0);
+      return array("erro" => true, "description" => "Erro desconhecido.", "students" => 0, "more" => $this->conn->error);
     }
   }
 
