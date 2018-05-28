@@ -13,6 +13,7 @@ include_once('EnrolmentsGraduacao.php');
 include_once('EnrolmentsPosGraduacao.php');
 include_once('../grades/Grades.php');
 include_once('../modulos/Modulos.php');
+include_once('../logs/Logs.php');
 
 // Connect to the External Database
 $dbExternal = new DataBase("external_enrolment");
@@ -91,6 +92,8 @@ function matriculaAlunoPosEAD($student, $course){
   $grades = new Grades($GLOBALS['connExternal']);
   // Create an instance of Modulos with connection to external database
   $modulos = new Modulos($GLOBALS['connExternal']);
+  // Cria uma instância de Logs
+  $logs = new Logs($GLOBALS['connExternal']);
 
   echo "<h1>Aluno é da Pós-EaD:</h1> <h3>{$student['username']}</h3>";
   $username = $student['username'];
@@ -104,12 +107,14 @@ function matriculaAlunoPosEAD($student, $course){
     $enrolments->conn = $GLOBALS['connExternal'];
     // Enroll the student the course and catch the response of it's process
     $enrolmentResponse = $enrolments->enrolStudentInCourse($username, $shortnamecourse, $matriz);
+    $logs->saveLog($enrolmentResponse['description'], $enrolmentResponse['erro'], $enrolmentResponse['more']);
     // Execute the sync.php
     exec('php C:\wamp\www\moodle\enrol\database\cli\sync.php');
     echo json_encode($enrolmentResponse);
   }else{
     // Houve algum erro ao buscar a matriz
     // save in log the error
+    $logs->saveLog($matrizResponse['description'], $matrizResponse['erro'], $matrizResponse['more']);
   }
 }
 
@@ -120,6 +125,8 @@ function matriculaAlunoGraduacao($student, $course){
   $grades = new Grades($GLOBALS['connExternal']);
   // Create an instance of Modulos with connection to external database
   $modulos = new Modulos($GLOBALS['connExternal']);
+  // Cria uma instância de Logs
+  $logs = new Logs($GLOBALS['connExternal']);
 
   echo "<h1>Aluno é da Graduação:</h1> <h3>{$student['username']}, {$course}</h3>";
   $username = $student['username'];
@@ -129,14 +136,17 @@ function matriculaAlunoGraduacao($student, $course){
     echo "matriz graduação: {$matriz}";
     $modulosResponse = $modulos->getModulosByMatrizId($matriz);
     if($modulosResponse['erro']){
+      $logs->saveLog($modulosResponse['description'], $modulosResponse['erro'], $modulosResponse['more']);
       echo json_encode($modulosResponse);
     }else{
       $modulosArray = $modulosResponse['modulos'];
       // Esta função matricula o aluno em todos os módulos passados como array, a identificação dos módulos, ou courses, são por shortname
       $enrolmentResponse = $enrolments->enrolAlunoByModulosShortName($username, $modulosArray, $matriz);
       if($enrolmentResponse['erro']){
+        $logs->saveLog($enrolmentResponse['description'], $enrolmentResponse['erro'], $enrolmentResponse['more']);
         echo json_encode($enrolmentResponse);
       }else{
+        $logs->saveLog($enrolmentResponse['description'], $enrolmentResponse['erro'], $enrolmentResponse['more']);
         echo json_encode($enrolmentResponse);
       }
     }
@@ -144,8 +154,9 @@ function matriculaAlunoGraduacao($student, $course){
     exec('php C:\wamp\www\moodle\enrol\database\cli\sync.php');
     // echo json_encode($enrolmentResponse);
   }else{
-    // Houve algum erro ao buscar a matriz
+    // Houve algum error ao buscar a matriz
     // save in log the error
+    $logs->saveLog($matrizResponse['description'], $matrizResponse['erro'], $matrizResponse['more']);
     echo json_encode($matrizResponse);
   }
 }

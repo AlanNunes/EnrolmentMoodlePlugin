@@ -63,7 +63,7 @@ Class Enrolments {
     $timecreated = time();
     $sql = "INSERT INTO enrolments (shortnamecourse, username, shortnamerole, matriz, timecreated) VALUES ('{$shortnamecourse}', '{$username}', DEFAULT, {$matriz}, {$timecreated})";
     if($this->conn->query($sql)){
-      return array("erro" => false, "description" => "O aluno foi matriculado no curso com sucesso");
+      return array("erro" => false, "description" => "O aluno foi matriculado no curso com sucesso", "more" => "");
     }else{
       return array("erro" => true, "description" => "O aluno não foi matriculado no curso", "more" => $this->conn->error);
     }
@@ -97,7 +97,7 @@ Class Enrolments {
                 VALUES ('{$shortnamecourse}', '{$username}', 'student', {$matriz}, {$timecreated});";
     }
     if($this->conn->multi_query($sql)){
-      return array("erro" => false, "description" => "O aluno '{$username}' foi matriculado com sucesso nas disciplinas(courses), referente à matriz '{$matriz}'");
+      return array("erro" => false, "description" => "O aluno '{$username}' foi matriculado com sucesso nas disciplinas(courses), referente à matriz '{$matriz}'", "more" => "");
     }else{
       return array("erro" => true, "description" => "O aluno '{$username}' não foi matriculado nas disciplinas(courses), referente à matriz '{$matriz}'", "more" => $this->conn->error);
     }

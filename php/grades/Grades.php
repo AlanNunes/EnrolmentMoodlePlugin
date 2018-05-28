@@ -72,9 +72,9 @@ Class Grades {
       if($result->num_rows > 0){
         $row = $result->fetch_assoc();
         $matriz = $row["id"];
-        return array("erro" => false, "description" => "Matriz encontrada", "matriz" => $matriz);
+        return array("erro" => false, "description" => "Matriz encontrada", "matriz" => $matriz, "more" => "");
       }else{
-        return array("erro" => true, "description" => "Nenhuma matriz foi encontrada", "more" => $this->conn->error);
+        return array("erro" => true, "description" => "Nenhuma matriz foi encontrada", "more" => "shortnamecourse: {$shortnamecourse}, modalidade: {$modalidade}");
       }
     }else{
       return array("erro" => true, "description" => "Erro desconhecido", "more" => $result);
