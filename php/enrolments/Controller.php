@@ -9,6 +9,8 @@
  */
 include_once('../database/DataBase.php');
 include_once('Enrolments.php');
+include_once('EnrolmentsGraduacao.php');
+include_once('EnrolmentsPosGraduacao.php');
 include_once('../grades/Grades.php');
 include_once('../modulos/Modulos.php');
 
@@ -22,41 +24,51 @@ $connMoodle = $dbMoodle->getConnection();
 
 // Create an instance for Enrolments
 $enrolments = new Enrolments($connMoodle);
+$enrolmentsGraduacao = new EnrolmentsGraduacao($connMoodle);
+$enrolmentsPosGraduacao = new EnrolmentsPosGraduacao($connMoodle);
 // Cria uma instância da Classe Grades(matrizes)
 $grades = new Grades($connExternal);
 // Create an instance of Modulos with connection to external database
 $modulos = new Modulos($connExternal);
-// Get all the students that are not enrolled in any course
-$studentsNotEnrolleds = $enrolments->getStudentsNotSubscribedInAnyCourse();
 
+// Get all the students that are not enrolled in any course from POS-EAD
+$studentsNotEnrolledsPosGrad = $enrolmentsPosGraduacao->getStudentsNotSubscribedInAnyCourse();
 // TDD
-var_dump($studentsNotEnrolleds);
-
-foreach($studentsNotEnrolleds['students'] as $student){
-  // Get basic information of the student
-  $username = $student['username'];
-  $lastname = $student['lastname'];
-  // This conditional is necessary because moodle creates a user called 'guest' without a lastname
-  if($student['lastname'] != ' '){
+var_dump($studentsNotEnrolledsPosGrad);
+if($studentsNotEnrolledsPosGrad['students']){
+  foreach($studentsNotEnrolledsPosGrad['students'] as $student){
+    // Get basic information of the student
+    $username = $student['username'];
     list($city, $course) = explode("-", $student['lastname']);
-  }
-  // End getting basic information
-
-  // Check if the student is from 'Pós-Graduação'
-  if(stripos($lastname, "POS-EAD")){
+    // End getting basic information
     // Matricula aluno da Pós EAD no primeiro módulo, da matriz ativa atual
     matriculaAlunoPosEAD($student, $course);
-  }else{
-    // Matricula os alunos da Graduação em todos os cursos da matriz atual
+  }
+}
+
+// *************************************************************************************************
+
+// Get all the students that are not enrolled in any course from POS-EAD
+$studentsNotEnrolledsGraduacao = $enrolmentsGraduacao->getStudentsNotSubscribedInAnyCourse();
+// TDD
+var_dump($studentsNotEnrolledsGraduacao);
+if($studentsNotEnrolledsGraduacao['students']){
+  foreach($studentsNotEnrolledsGraduacao['students'] as $student){
+    // Get basic information of the student
+    $username = $student['username'];
     if($student['lastname'] != ' '){
+      list($city, $course) = explode("-", $student['lastname']);
+      // Matricula aluno da Pós EAD no primeiro módulo, da matriz ativa atual
       matriculaAlunoGraduacao($student, $course);
     }
   }
 }
 
 // Create an instance for students of Pós-Graduação
-$enrolmentsPosGraduacao = new EnrolmentsPosGraduacao($connExternal);
+// $enrolmentsPosGraduacao = new EnrolmentsPosGraduacao($connExternal);
+$enrolmentsPosGraduacao->conn = $connExternal;
 $studentsPosGradExpiredTime = $enrolmentsPosGraduacao->getStudentsByTimeEnrolment(60*1);
+echo '<p>Estudantes da Pós-Graduação com mais de {60*1} segundos inscritos num curso</p>';
 var_dump($studentsPosGradExpiredTime);
 
 // Just go into the IF scope if there is some students not enrolled in any course
@@ -109,7 +121,7 @@ function matriculaAlunoGraduacao($student, $course){
   // Create an instance of Modulos with connection to external database
   $modulos = new Modulos($GLOBALS['connExternal']);
 
-  echo "<h1>Aluno é da Graduação:</h1> <h3>{$student['username']}</h3>";
+  echo "<h1>Aluno é da Graduação:</h1> <h3>{$student['username']}, {$course}</h3>";
   $username = $student['username'];
   $matrizResponse = $grades->getMatrizByCourseAndModalidade($course, 'PRESENCIAL');
   if(!$matrizResponse["erro"]){
@@ -134,7 +146,7 @@ function matriculaAlunoGraduacao($student, $course){
   }else{
     // Houve algum erro ao buscar a matriz
     // save in log the error
-    echo json_encode($student);
+    echo json_encode($matrizResponse);
   }
 }
 
