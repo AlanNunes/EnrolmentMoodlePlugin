@@ -9,7 +9,8 @@
  */
 require_once('../categories/Categories.php');
 require_once('../courses/Courses.php');
-require_once('../database/DataBase.php');
+require_once('../database/DataBase_Moodle.php');
+require_once('../database/DataBase_Externo.php');
 require_once('Grades.php');
 
 switch ($_POST["action"]) {
@@ -48,7 +49,7 @@ function registerGrade(){
       // Em nosso Banco de Dados Externo temos uma tabela com todos os cursos e esses cursos tem como atributo 'shortname' o mesmo valor de 'idnumber' da categoria que identifica o curso
       $shortnamecourse = $data["categoryIdNumber"];
 
-      $db = new DataBase("external_enrolment");
+      $db = new DataBase_Externo();
       $conn = $db->getConnection();
 
       $grade = new Grades($conn);
@@ -82,7 +83,7 @@ function registerGrade(){
 
 
 function getGrades(){
-  $db = new DataBase("external_enrolment");
+  $db = new DataBase_Externo();
   $conn = $db->getConnection();
 
   $grade = new Grades($conn);

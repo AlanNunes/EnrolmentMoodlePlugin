@@ -8,7 +8,7 @@
  * @copyright  2018 Dual Dev
  */
 require_once('Courses.php');
-require_once('../database/DataBase.php');
+require_once('../database/DataBase_Moodle.php');
 
 switch ($_POST["action"]) {
   // It calls the function to register the Grade(Matriz, grade curricular)
@@ -25,7 +25,7 @@ function getCoursesByCategory(){
   if(isset($_POST["idCategory"]) && !empty($_POST["idCategory"])){
     $idCategory = $_POST["idCategory"];
 
-    $db = new DataBase("moodle");
+    $db = new DataBase_Moodle();
     $conn = $db->getConnection();
 
     $courses = new Courses($conn);

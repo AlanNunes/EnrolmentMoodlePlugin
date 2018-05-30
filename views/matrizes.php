@@ -1,15 +1,16 @@
 <?php
-require_once("../php/database/DataBase.php");
+require_once("../php/database/DataBase_Moodle.php");
+require_once("../php/database/DataBase_Externo.php");
 require_once("../php/categories/Categories.php");
 require_once("../php/modalidades_de_cursos/Modalidades_de_Cursos.php");
 
 // Instance of Moodle database
-$db = new DataBase("moodle");
-$connMoodle = $db->getConnection();
+$dbMoodle = new DataBase_Moodle();
+$connMoodle = $dbMoodle->getConnection();
 
 // Instance of External database
-$db = new DataBase("external_enrolment");
-$connExternal = $db->getConnection();
+$dbExternal = new DataBase_Externo();
+$connExternal = $dbExternal->getConnection();
 
 // Instance of Categories
 $categories = new Categories($connMoodle);

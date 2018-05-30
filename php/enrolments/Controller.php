@@ -7,7 +7,8 @@
  * @author     Gustavo de Mello Brandão <sm70plus@gmail.com>
  * @copyright  2018 Dual Dev
  */
-include_once('../database/DataBase.php');
+include_once('../database/DataBase_Moodle.php');
+include_once('../database/DataBase_Externo.php');
 include_once('Enrolments.php');
 include_once('EnrolmentsGraduacao.php');
 include_once('EnrolmentsPosGraduacao.php');
@@ -15,12 +16,12 @@ include_once('../grades/Grades.php');
 include_once('../modulos/Modulos.php');
 include_once('../logs/Logs.php');
 
-// Connect to the External Database
-$dbExternal = new DataBase("external_enrolment");
+// Connect to External Database
+$dbExternal = new DataBase_Externo();
 $connExternal = $dbExternal->getConnection();
 
-// Connect to the Moodle
-$dbMoodle = new DataBase("moodle");
+// Connect to Moodle
+$dbMoodle = new DataBase_Moodle();
 $connMoodle = $dbMoodle->getConnection();
 
 // Create an instance for Enrolments
@@ -31,6 +32,10 @@ $enrolmentsPosGraduacao = new EnrolmentsPosGraduacao($connMoodle);
 $grades = new Grades($connExternal);
 // Create an instance of Modulos with connection to external database
 $modulos = new Modulos($connExternal);
+// Setting moodle folder name
+$moodle_folder_name = 'moodle';
+$moodle_path = $_SERVER['DOCUMENT_ROOT']."/".$moodle_folder_name."/";
+echo $GLOBALS['moodle_path'] . PHP_EOL;
 
 // Get all the students that are not enrolled in any course from POS-EAD
 $studentsNotEnrolledsPosGrad = $enrolmentsPosGraduacao->getStudentsNotSubscribedInAnyCourse();
@@ -81,7 +86,8 @@ if($studentsPosGradExpiredTime['students']){
     // $enrolments->conn = $connExternal;
     echo "<h1>shortnamecourse: ".$student['shortnamecourse']."</h1>";
     $enrolmentsPosGraduacao->enrolInNextCourse($student['username'], $student['shortnamecourse'], $student['matriz']);
-    exec('php C:\wamp\www\moodle\enrol\database\cli\sync.php');
+    // Execute the sync.php
+    exec("php ".$GLOBALS['moodle_path'].'/enrol/database/cli/sync.php');
   }
 }
 
@@ -109,7 +115,7 @@ function matriculaAlunoPosEAD($student, $course){
     $enrolmentResponse = $enrolments->enrolStudentInCourse($username, $shortnamecourse, $matriz);
     $logs->saveLog($enrolmentResponse['description'], $enrolmentResponse['erro'], $enrolmentResponse['more']);
     // Execute the sync.php
-    exec('php C:\wamp\www\moodle\enrol\database\cli\sync.php');
+    exec("php ".$GLOBALS['moodle_path'].'/enrol/database/cli/sync.php');
     echo json_encode($enrolmentResponse);
   }else{
     // Houve algum erro ao buscar a matriz
@@ -151,7 +157,8 @@ function matriculaAlunoGraduacao($student, $course){
       }
     }
     // Execute the sync.php
-    exec('php C:\wamp\www\moodle\enrol\database\cli\sync.php');
+    $teste = exec("php ".$GLOBALS['moodle_path'].'/enrol/database/cli/sync.php');
+    echo $teste;
     // echo json_encode($enrolmentResponse);
   }else{
     // Houve algum error ao buscar a matriz
