@@ -8,7 +8,7 @@
  * @copyright  2018 Dual Dev
  */
 require_once('Categories.php');
-require_once('../database/DataBase_Moodle.php');
+require_once('../database/DataBase.php');
 
 switch ($_POST["action"]) {
   // It calls the function to register the Grade(Matriz, grade curricular)
@@ -27,7 +27,7 @@ switch ($_POST["action"]) {
 
 // Retorna as categorias dos cursos
 function getCursosCategories(){
-  $db = new DataBase_Moodle();
+  $db = new DataBase("moodle");
   $conn = $db->getConnection();
 
   $categories = new Categories($conn);
@@ -40,7 +40,7 @@ function getCursosAndPeriodosByCategories(){
   if(isset($_POST["idCategory"]) && !empty($_POST["idCategory"])){
     $id = $_POST["idCategory"];
 
-    $db = new DataBase_Moodle();
+    $db = new DataBase("moodle");
     $conn = $db->getConnection();
 
     $categories = new Categories($conn);

@@ -1,16 +1,15 @@
 <?php
-require_once("../php/database/DataBase_Moodle.php");
-require_once("../php/database/DataBase_Externo.php");
+require_once("../php/database/DataBase.php");
 require_once("../php/categories/Categories.php");
 require_once("../php/modalidades_de_cursos/Modalidades_de_Cursos.php");
 
 // Instance of Moodle database
-$dbMoodle = new DataBase_Moodle();
-$connMoodle = $dbMoodle->getConnection();
+$db = new DataBase("moodle");
+$connMoodle = $db->getConnection();
 
 // Instance of External database
-$dbExternal = new DataBase_Externo();
-$connExternal = $dbExternal->getConnection();
+$db = new DataBase("external_enrolment");
+$connExternal = $db->getConnection();
 
 // Instance of Categories
 $categories = new Categories($connMoodle);
@@ -24,7 +23,6 @@ $modalidades = new Modalidades_de_Cursos($connExternal);
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -70,15 +68,6 @@ $modalidades = new Modalidades_de_Cursos($connExternal);
             <label for="cursos">Cursos:</label>
             <select id="cursos" class="form-control" onchange=getCursosAndPeriodosByCategories(this.value)>
               <option value=''>(Selecione)</option>
-              <?php
-                $response = $categories->getCursosCategories();
-                foreach($response['cursos'] as $curso){
-                  $id = $curso['id'];
-                  $idnumber = $curso['idnumber'];
-                  $nome = $curso['name'];
-                  echo "<option value='{$id}' data-idnumber='{$idnumber}'>{$nome}</option>";
-                }
-               ?>
             </select>
           </div>
         </div>
@@ -130,7 +119,7 @@ $modalidades = new Modalidades_de_Cursos($connExternal);
   </body>
   <script>
   $(document).ready(function(){
-    // getCursosCategories();
+    getCursosCategories();
   });
 
   // Lista todas as categorias de uma determinada modalidade
@@ -139,7 +128,7 @@ $modalidades = new Modalidades_de_Cursos($connExternal);
     var data = {
       "action": "getCursosCategories"
     };
-    // data = $(this).serialize() + "&" + $.param(data);
+    data = $(this).serialize() + "&" + $.param(data);
       $.ajax({
         type: "POST",
         dataType: "json",
