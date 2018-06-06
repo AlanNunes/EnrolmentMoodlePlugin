@@ -11,11 +11,11 @@
 Class DataBase_Moodle {
   private $conn;
   private $config = array(
-    'host' => 'mysql.hostinger.com.br',
-    'user' => 'u501599648_moext',
-    'password' => '123Mud@r',
-    'database' => 'u501599648_moext',
-    'port' => 3306,
+    'host' => 'localhost',
+    'user' => 'root',
+    'password' => '',
+    'database' => 'moodle',
+    'port' => 3307,
     'socket' => '',
     'dbcollation' => 'utf8mb4_unicode_ci',
   );
@@ -27,9 +27,8 @@ Class DataBase_Moodle {
 
   // Create a connection to the database specified in the config and set it's connection to $conn
   private function connect(){
-    $conn = new mysqli($this->config['host'], $this->config['user'], $this->config['password'], $this->config['database'], $this->config['port'], $this->config['socket']);
-    mysqli_set_charset($conn, $this->config['dbcollation']);
-    $this->conn = $conn;
+    $this->conn = new mysqli($this->config['host'], $this->config['user'], $this->config['password'], $this->config['database'], $this->config['port'], $this->config['socket']);
+    $this->conn->set_charset("utf-8");
   }
 
   // Return the variable conn which has the connection to DataBase

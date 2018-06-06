@@ -27,9 +27,8 @@ Class DataBase_Externo {
 
   // Create a connection to the database specified in the config and set it's connection to $conn
   private function connect(){
-    $conn = new mysqli($this->config['host'], $this->config['user'], $this->config['password'], $this->config['database'], $this->config['port'], $this->config['socket']);
-    mysqli_set_charset($conn, $this->config['dbcollation']);
-    $this->conn = $conn;
+    $this->conn = new mysqli($this->config['host'], $this->config['user'], $this->config['password'], $this->config['database'], $this->config['port'], $this->config['socket']);
+    $this->conn->set_charset("utf-8");
   }
 
   // Return the variable conn which has the connection to DataBase

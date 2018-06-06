@@ -28,15 +28,15 @@ $enrolments = new Enrolments($connMoodle);
 $grades = new Grades($connExternal);
 // Create an instance of Modulos with connection to external database
 $modulos = new Modulos($connExternal);
-<<<<<<< HEAD
-// Setting moodle folder name
+// <<<<<<< HEAD
+// // Setting moodle folder name
 $moodle_folder_name = 'moodle';
 $moodle_path = $_SERVER['DOCUMENT_ROOT']."/".$moodle_folder_name."/";
 echo $GLOBALS['moodle_path'] . PHP_EOL;
-=======
+// =======
 // Get all the students that are not enrolled in any course
 $studentsNotEnrolleds = $enrolments->getStudentsNotSubscribedInAnyCourse();
->>>>>>> parent of e24c5aa... Faz tudo funcionar, a sincronização está funcionando.
+// >>>>>>> parent of e24c5aa... Faz tudo funcionar, a sincronização está funcionando.
 
 // TDD
 var_dump($studentsNotEnrolleds);
@@ -95,19 +95,23 @@ function matriculaAlunoPosEAD($student, $course){
   echo "<h1>Aluno é da Pós-EaD:</h1> <h3>{$student['username']}</h3>";
   $username = $student['username'];
   $matrizResponse = $grades->getMatrizByCourseAndModalidade($course, 'EAD');
+  var_dump($matrizResponse);
   if(!$matrizResponse["erro"]){
     $matriz = $matrizResponse['matriz']; // Pega a matriz que o aluno deve ser inscrito na matricula
     // Pega o 'shortname' do curso que aparece em primeiro na lista da matriz
     $modulosResponse = $modulos->getShortNameCourseByGrade($matriz);
-    $shortnamecourse = $modulosResponse["shortnamecourse"];
-    // It switches the connection of enrolments from moodle to the external database's connection
-    $enrolments->conn = $GLOBALS['connExternal'];
-    // Enroll the student the course and catch the response of it's process
-    $enrolmentResponse = $enrolments->enrolStudentInCourse($username, $shortnamecourse, $matriz);
-    $logs->saveLog($enrolmentResponse['description'], $enrolmentResponse['erro'], $enrolmentResponse['more']);
-    // Execute the sync.php
-    exec("php ".$GLOBALS['moodle_path'].'/enrol/database/cli/sync.php');
-    echo json_encode($enrolmentResponse);
+    var_dump($modulosResponse);
+    if(!$modulosResponse['erro']){
+      $shortnamecourse = $modulosResponse["shortnamecourse"];
+      // It switches the connection of enrolments from moodle to the external database's connection
+      $enrolments->conn = $GLOBALS['connExternal'];
+      // Enroll the student the course and catch the response of it's process
+      $enrolmentResponse = $enrolments->enrolStudentInCourse($username, $shortnamecourse, $matriz);
+      $logs->saveLog($enrolmentResponse['description'], $enrolmentResponse['erro'], $enrolmentResponse['more']);
+      // Execute the sync.php
+      exec("php ".$GLOBALS['moodle_path'].'/enrol/database/cli/sync.php');
+      echo json_encode($enrolmentResponse);
+    }
   }else{
     // Houve algum erro ao buscar a matriz
     // save in log the error
@@ -154,12 +158,12 @@ function matriculaAlunoGraduacao($student, $course){
   }else{
     // Houve algum error ao buscar a matriz
     // save in log the error
-<<<<<<< HEAD
-    $logs->saveLog($matrizResponse['description'], $matrizResponse['erro'], $matrizResponse['more']);
-    echo json_encode($matrizResponse);
-=======
+// <<<<<<< HEAD
+//     $logs->saveLog($matrizResponse['description'], $matrizResponse['erro'], $matrizResponse['more']);
+//     echo json_encode($matrizResponse);
+// =======
     echo json_encode($student);
->>>>>>> parent of e24c5aa... Faz tudo funcionar, a sincronização está funcionando.
+// >>>>>>> parent of e24c5aa... Faz tudo funcionar, a sincronização está funcionando.
   }
 }
 
