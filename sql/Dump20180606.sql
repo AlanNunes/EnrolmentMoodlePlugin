@@ -16,6 +16,31 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `categorias_de_logs`
+--
+
+DROP TABLE IF EXISTS `categorias_de_logs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `categorias_de_logs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(45) CHARACTER SET latin1 NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nome_UNIQUE` (`nome`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `categorias_de_logs`
+--
+
+LOCK TABLES `categorias_de_logs` WRITE;
+/*!40000 ALTER TABLE `categorias_de_logs` DISABLE KEYS */;
+INSERT INTO `categorias_de_logs` VALUES (1,'emails'),(4,'enrolments'),(2,'matrizes'),(3,'módulos'),(5,'outros');
+/*!40000 ALTER TABLE `categorias_de_logs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `courses`
 --
 
@@ -49,12 +74,12 @@ DROP TABLE IF EXISTS `cursos`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `cursos` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nome` varchar(255) DEFAULT NULL,
-  `shortname` varchar(100) NOT NULL,
+  `nome` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `shortname` varchar(100) CHARACTER SET latin1 NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `shortname` (`shortname`),
   UNIQUE KEY `nome` (`nome`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -104,12 +129,16 @@ DROP TABLE IF EXISTS `logs`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `description` varchar(255) NOT NULL,
+  `description` varchar(255) CHARACTER SET latin1 NOT NULL,
   `error` tinyint(1) NOT NULL,
   `timecreated` bigint(20) NOT NULL,
-  `more` varchar(255) DEFAULT NULL,
+  `more` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `username` varchar(45) DEFAULT NULL,
+  `shortnamecourse` varchar(45) DEFAULT NULL,
+  `periodo` int(2) DEFAULT NULL,
+  `matriz` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -118,6 +147,7 @@ CREATE TABLE `logs` (
 
 LOCK TABLES `logs` WRITE;
 /*!40000 ALTER TABLE `logs` DISABLE KEYS */;
+INSERT INTO `logs` VALUES (1,'Nenhuma matriz foi encontrada',1,1528310203,'shortnamecourse: SIS, modalidade: EAD',NULL,NULL,NULL,NULL),(2,'Nenhuma matriz foi encontrada',1,1528310203,'shortnamecourse: SIS, modalidade: EAD',NULL,NULL,NULL,NULL),(3,'Nenhuma matriz foi encontrada',1,1528310203,'shortnamecourse: ENC, modalidade: EAD',NULL,NULL,NULL,NULL),(4,'Nenhuma matriz foi encontrada',1,1528310203,'shortnamecourse: GPR, modalidade: EAD',NULL,NULL,NULL,NULL),(5,'Nenhuma matriz foi encontrada',1,1528310205,'shortnamecourse: SIS, modalidade: EAD',NULL,NULL,NULL,NULL),(6,'Nenhuma matriz foi encontrada',1,1528310205,'shortnamecourse: SIS, modalidade: EAD',NULL,NULL,NULL,NULL),(7,'Nenhuma matriz foi encontrada',1,1528310205,'shortnamecourse: ENC, modalidade: EAD',NULL,NULL,NULL,NULL),(8,'Nenhuma matriz foi encontrada',1,1528310205,'shortnamecourse: GPR, modalidade: EAD',NULL,NULL,NULL,NULL),(9,'Nenhuma matriz foi encontrada',1,1528310205,'shortnamecourse: SIS, modalidade: EAD',NULL,NULL,NULL,NULL),(10,'Nenhuma matriz foi encontrada',1,1528310205,'shortnamecourse: SIS, modalidade: EAD',NULL,NULL,NULL,NULL),(11,'Nenhuma matriz foi encontrada',1,1528310205,'shortnamecourse: ENC, modalidade: EAD',NULL,NULL,NULL,NULL),(12,'Nenhuma matriz foi encontrada',1,1528310205,'shortnamecourse: GPR, modalidade: EAD',NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `logs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -140,7 +170,7 @@ CREATE TABLE `matrizes` (
   KEY `modalidade` (`modalidade`),
   CONSTRAINT `matrizes_ibfk_1` FOREIGN KEY (`curso`) REFERENCES `cursos` (`id`),
   CONSTRAINT `matrizes_ibfk_2` FOREIGN KEY (`modalidade`) REFERENCES `modalidades_de_cursos` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -149,7 +179,6 @@ CREATE TABLE `matrizes` (
 
 LOCK TABLES `matrizes` WRITE;
 /*!40000 ALTER TABLE `matrizes` DISABLE KEYS */;
-INSERT INTO `matrizes` VALUES (14,'Sistemas de Informação Presencial 2018',1,1,2),(15,'Engenharia Civil Presencial 2018',4,1,2),(18,'Gestão de Projetos EaD 2018',6,1,1),(19,'Sistemas de Informação Pós-EaD 2018',1,1,1);
 /*!40000 ALTER TABLE `matrizes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -194,7 +223,7 @@ CREATE TABLE `modulos` (
   PRIMARY KEY (`id`),
   KEY `matriz` (`matriz`),
   CONSTRAINT `modulos_ibfk_1` FOREIGN KEY (`matriz`) REFERENCES `matrizes` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -203,7 +232,6 @@ CREATE TABLE `modulos` (
 
 LOCK TABLES `modulos` WRITE;
 /*!40000 ALTER TABLE `modulos` DISABLE KEYS */;
-INSERT INTO `modulos` VALUES (23,14,0,'ADA',1),(24,14,1,'BDD',1),(25,14,2,'MD',1),(26,14,3,'PI',1),(27,14,4,'IA',1),(28,15,0,'FIS',1),(29,15,1,'MAT',1),(30,15,0,'FCC',2),(31,15,0,'SCO',3),(32,15,1,'DSN',3),(36,18,0,'UML',1),(37,18,1,'SPEI',1),(38,18,2,'SPEII',1),(39,19,0,'PI',1),(40,19,1,'MD',1),(41,19,2,'ADA',1),(42,19,3,'BDD',1),(43,19,4,'IA',1);
 /*!40000 ALTER TABLE `modulos` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -216,4 +244,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-05-28 18:05:36
+-- Dump completed on 2018-06-06 15:51:23
