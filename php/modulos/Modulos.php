@@ -31,9 +31,9 @@ Class Modulos {
     }
   }
 
-  // Pega todos os módulos referentes à matriz
-  public function getModulosByMatrizId($id){
-    $sql = "SELECT shortnamecourse FROM modulos WHERE matriz = {$id}";
+  // Pega todos os módulos referentes à matriz e ao período
+  public function getModulosByMatrizIdAndPeriodo($id, $periodo){
+    $sql = "SELECT shortnamecourse FROM modulos WHERE matriz = {$id} AND periodo = {$periodo}";
     $result = $this->conn->query($sql);
     if($result->num_rows > 0){
       $modulos = [];
