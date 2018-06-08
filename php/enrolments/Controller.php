@@ -2,7 +2,7 @@
 /**
  * Created on ??/04/2018
  *
- * @category   Grades
+ * @category   Enrolments
  * @author     Alan Nunes da Silva <alann.625@gmail.com>
  * @author     Gustavo de Mello Brandão <sm70plus@gmail.com>
  * @copyright  2018 Dual Dev
