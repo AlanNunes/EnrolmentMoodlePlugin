@@ -124,7 +124,7 @@ $modalidades = new Modalidades_de_Cursos($connExternal);
 
   // Lista todas as categorias de uma determinada modalidade
   function getCursosCategories(){
-    document.getElementById("cursos").innerHTML = '';
+    document.getElementById("cursos").innerHTML = "<option value='0'>(Selecione)</option>";
     var data = {
       "action": "getCursosCategories"
     };

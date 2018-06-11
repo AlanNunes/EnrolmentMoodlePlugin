@@ -36,8 +36,8 @@ Class Categories {
   // Pelo padrão do UGB, essas categorias selecionadas vão ser sempre os períodos
   // Recolhe todos os períodos(categorias)
   public function getPeriodosParents(){
-    $sql = "SELECT DISTINCT cat.parent FROM moodle.mdl_course_categories cat
-            INNER JOIN moodle.mdl_course c ON cat.id = c.category";
+    $sql = "SELECT DISTINCT cat.parent FROM mdl_course_categories cat
+            INNER JOIN mdl_course c ON cat.id = c.category";
     $result = $this->conn->query($sql);
     if($result->num_rows > 0){
       while($row = $result->fetch_assoc()){

@@ -38,34 +38,30 @@ Class Logs {
   }
   /**
   * Salva a log no banco de dados
+  * @param string $description Descrição do processo
+  * @param boolean $error Sinaliza se ocorreu falha no processo
+  * @param string $more Apresenta o erro retornado pelo MySQL
+  * @param string $username Username do estudante
+  * @param string $shortnamecourse Shortname do curso
+  * @param string $periodo Período do curso
+  * @param string $matriz Matriz do curso
+  * @return array Caso ocorra erro é retornado a descrição dada pelo MySQL
   */
-  public function saveLog($description, $error, $more, $categoriaNome, $username, $shortnamecourse, $periodo, $matriz){
+  public function saveLog($description, $error, $more, $username, $shortnamecourse, $periodo, $matriz){
     $timecreated = time();
     $error = ($error)?1:0;
     $shortnamecourse = ($shortnamecourse==null)?"null":"'{$shortnamecourse}'";
     $periodo = ($periodo==null)?"null":"'{$periodo}'";
     $matriz = ($matriz==null)?"null":"'{$matriz}'";
-    // $categoria = $this->getCategoriaId($categoriaNome);
-    $sql = "INSERT INTO logs(description, error, more, timecreated, username, shortnamecourse, periodo, matriz)
-            VALUES ('{$description}', {$error}, '{$more}', {$timecreated}, '{$username}', {$shortnamecourse}, {$periodo}, {$matriz})";
+    // $categoria = $this->getCategoriaId();
+    $sql = "INSERT INTO logs(description, error, more, timecreated, username,
+            shortnamecourse, periodo, matriz) VALUES ('{$description}', {$error},
+              '{$more}', {$timecreated}, '{$username}', {$shortnamecourse},
+                {$periodo}, {$matriz})";
     if(!$this->conn->query($sql)){
       return $this->conn->error;
     }
   }
-
-  /**
-  * Busca o id da categoria de logs de acordo com seu nome(unique key)
-  * Retorna apenas valores inteiros
-  */
-  // public function getCategoriaId($categoriaNome){
-  //   $sql = "SELECT id FROM categorias_de_logs WHERE nome = '{$categoriaNome}'";
-  //   echo "<br/>".$sql."<br/>";
-  //   $result = $this->conn->query($sql);
-  //   if($result->num_rows > 0){
-  //     $row = $result->fetch_assoc();
-  //     return $row['id'];
-  //   }
-  // }
 }
 
 ?>

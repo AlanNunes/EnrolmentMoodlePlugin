@@ -16,6 +16,10 @@ include_once('../modulos/Modulos.php');
 include_once('../mails/Outlook_Mails.php');
 
 /**
+* Define o path do sync
+*/
+$sync_path = 'C:\wamp\www\moodle\enrol\database\cli\sync.php';
+/**
 * DataBase Connection
 *
 * Connect to the external database
@@ -84,7 +88,7 @@ if($studentsNotEnrolledsPosGrad['students']){
     * It assumes that the student's lastnme has this default: 'CITY-COURSE'
     * Example: 'VR-SIS'
     */
-    list($city, $course) = explode("-", $student['lastname']);
+    list($city, $modalidade, $course) = explode("-", $student['lastname']);
     /**
     * Enrolments
     *
@@ -152,7 +156,7 @@ $enrolmentsPosGraduacao->conn = $connExternal;
 * Gets all the students that has the time expired by the paramater
 * @param integer Limit time of enrolment
 */
-$studentsPosGradExpiredTime = $enrolmentsPosGraduacao->getStudentsByTimeEnrolment(60*1);
+$studentsPosGradExpiredTime = $enrolmentsPosGraduacao->getStudentsByTimeEnrolment(60*5);
 echo '<p>Estudantes da Pós-Graduação com mais de {60*1} segundos inscritos num curso</p>'; // TDD
 var_dump($studentsPosGradExpiredTime); // TDD
 
@@ -177,7 +181,7 @@ if($studentsPosGradExpiredTime['students']){
     /**
     * Execute the sync
     */
-    exec('php C:\wamp\www\moodle\enrol\database\cli\sync.php');
+    exec("php ".$GLOBALS['sync_path']);
   }
 }
 
@@ -253,11 +257,12 @@ function matriculaAlunoPosEAD($student, $course){
       // Fim de envio de e-mail
     }
     // Execute the sync.php
-    exec('php C:\wamp\www\moodle\enrol\database\cli\sync.php');
+    exec("php ".$GLOBALS['sync_path']);
     echo json_encode($enrolmentResponse); // TDD
+    return $enrolmentResponse;
   }else{
     // Houve algum erro ao buscar a matriz
-    // save in log the error
+    return $matrizResponse;
   }
 }
 
@@ -316,7 +321,7 @@ function matriculaAlunoGraduacao($student, $course, $periodo){
       }
     }
     // Execute the sync.php
-    exec('php C:\wamp\www\moodle\enrol\database\cli\sync.php');
+    exec("php ".$GLOBALS['sync_path']);
     // echo json_encode($enrolmentResponse);
   }else{
     // Houve algum erro ao buscar a matriz
