@@ -30,7 +30,7 @@ function getCursosCategories(){
   $db = new DataBase("moodle");
   $conn = $db->getConnection();
 
-  $categories = new Categories($conn);
+  $categories = new Categories($conn, 'mdl_');
   $response = $categories->getCursosCategories();
   echo json_encode($response);
 }
@@ -43,7 +43,7 @@ function getCursosAndPeriodosByCategories(){
     $db = new DataBase("moodle");
     $conn = $db->getConnection();
 
-    $categories = new Categories($conn);
+    $categories = new Categories($conn, 'mdl_');
     $response = $categories->getCursosAndPeriodosByCategories($id);
     echo json_encode($response);
   }else{

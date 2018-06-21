@@ -11,15 +11,17 @@ Class Courses {
   private $id;
   private $fullname;
   private $shortname;
+  private $table_prefix;
   private $conn;
 
-  public function __construct($conn){
+  public function __construct($conn, $table_prefix){
     $this->conn = $conn;
+    $this->table_prefix = $table_prefix;
   }
 
   // This method return all courses relationed to the category specified
   public function getCoursesByCategory($category){
-      $sql = "SELECT fullname, shortname FROM mdl_course WHERE category = {$category}";
+      $sql = "SELECT fullname, shortname FROM {$this->table_prefix}course WHERE category = {$category}";
       $result = $this->conn->query($sql);
       $courses = null;
       if($result->num_rows > 0){

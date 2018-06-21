@@ -8,13 +8,30 @@
  * @copyright  2018 Dual Dev
  */
 Class Enrolments {
+  /**
+  * @var integer Id da matrícula
+  */
   private $id;
+  /**
+  * @var integer Momento o qual o aluno foi matriculado
+  */
   private $timecreated;
+  /**
+  * @var integer Id do estudante
+  */
   private $userid;
+  /**
+  * @var string Prefixo das tabelas
+  */
+  public $table_prefix;
+  /**
+  * Conexão do Banco de Dados
+  */
   public $conn;
 
-  public function __construct($conn){
+  public function __construct($conn, $table_prefix){
     $this->conn = $conn;
+    $this->table_prefix = $table_prefix;
   }
 
   // Get the shortname of the current enrolment's student
@@ -32,7 +49,11 @@ Class Enrolments {
 
   // Get the time when the student was enrolled in the course
   public function getEnrolmentInfo($shortname){
-    $sql = "SELECT c.id,c.shortname, c.sortorder, ue.timecreated FROM moodle.mdl_user_enrolments ue INNER JOIN moodle.mdl_enrol e ON ue.enrolid = e.id INNER JOIN moodle.mdl_course c ON c.id = e.courseid AND c.shortname = '$shortname'";
+    $sql = "SELECT c.id,c.shortname, c.sortorder, ue.timecreated
+    FROM moodle.{$this->table_prefix}user_enrolments ue
+    INNER JOIN moodle.{$this->table_prefix}enrol e ON ue.enrolid = e.id
+    INNER JOIN moodle.{$this->table_prefix}course c ON c.id = e.courseid
+    AND c.shortname = '$shortname'";
     $result = $this->conn->query($sql);
     if($result->num_rows > 0){
       $row = $result->fetch_assoc();
@@ -45,15 +66,18 @@ Class Enrolments {
 
   // This function returns all the students that are not subscribed in any couse
   public function getStudentsNotSubscribedInAnyCourse(){
-    $sql = "select distinct username, lastname from mdl_user where mdl_user.id not in (select userid from mdl_user_enrolments)";
+    $sql = "select distinct username, lastname from {$this->table_prefix}user where {$this->table_prefix}user.id
+    not in (select userid from {$this->table_prefix}user_enrolments)";
     $result = $this->conn->query($sql);
     if($result->num_rows > 0){
       while($student = $result->fetch_assoc()){
         $students[] = $student;
       }
-      return array("erro" => false, "description" => "There is some students tha are not subscribed in any course.", "students" => $students);
+      return array("erro" => false, "description" => "There is some students
+      that are not subscribed in any course.", "students" => $students);
     }else{
-      return array("erro" => false, "description" => "All the students are at least subscribed in one course.", "students" => 0);
+      return array("erro" => false, "description" => "All the students are at
+      least subscribed in one course.", "students" => 0);
     }
   }
 
@@ -61,45 +85,60 @@ Class Enrolments {
   // Matricula um aluno no banco de dados externo
   public function enrolStudentInCourse($username, $shortnamecourse, $matriz){
     $timecreated = time();
-    $sql = "INSERT INTO enrolments (shortnamecourse, username, shortnamerole, matriz, timecreated) VALUES ('{$shortnamecourse}', '{$username}', DEFAULT, {$matriz}, {$timecreated})";
+    $sql = "INSERT INTO enrolments (shortnamecourse, username, shortnamerole,
+      matriz, timecreated) VALUES ('{$shortnamecourse}', '{$username}', DEFAULT,
+         {$matriz}, {$timecreated})";
     if($this->conn->query($sql)){
-      return array("erro" => false, "description" => "O aluno foi matriculado no curso com sucesso");
+      return array("erro" => false, "description" => "O aluno foi matriculado no
+       curso com sucesso");
     }else{
-      return array("erro" => true, "description" => "O aluno não foi matriculado no curso", "more" => $this->conn->error);
+      return array("erro" => true, "description" => "O aluno não foi matriculado
+       no curso", "more" => $this->conn->error);
     }
   }
 
-  // This function gets all the students who are enrolled in a course for more than a time, specified in the paramater $time
-  // Esta função recolhe todos os alunos que estão matriculados em um curso por mais de um tempo específico, passado como parâmetro $time
+  // This function gets all the students who are enrolled in a course for more
+  // than a time, specified in the paramater $time
+  // Esta função recolhe todos os alunos que estão matriculados em um curso por
+  // mais de um tempo específico, passado como parâmetro $time
   public function getStudentsByTimeEnrolment($time){
-    $sql = "SELECT ue.timecreated, u.username FROM moodle.mdl_user_enrolments ue INNER JOIN moodle.mdl_enrol e ON ue.enrolid = e.id
-            INNER JOIN moodle.mdl_course c ON c.id = e.courseid INNER JOIN moodle.mdl_user u ON u.id = ue.userid
+    $sql = "SELECT ue.timecreated, u.username FROM moodle.{$this->table_prefix}user_enrolments ue
+     INNER JOIN moodle.{$this->table_prefix}enrol e ON ue.enrolid = e.id
+            INNER JOIN moodle.{$this->table_prefix}course c ON c.id = e.courseid
+            INNER JOIN moodle.{$this->table_prefix}user u ON u.id = ue.userid
               AND (unix_timestamp() - ue.timecreated) > {$time}";
     $result = $this->conn->query($sql);
     if($result->num_rows > 0){
       while($row = $result->fetch_assoc()){
         $students[] = $row;
       }
-      return array("erro" => false, "description" => "Foram encontrado alunos com mais de {$time} segundos de incrição em um curso.", "students" => $students);
+      return array("erro" => false, "description" => "Foram encontrado alunos
+      com mais de {$time} segundos de incrição em um curso.", "students" => $students);
     }else{
-      return array("erro" => false, "description" => "Nenhum aluno foi encontrado com mais {$time} segundos de inscrição em um curso.", "students" => 0);
+      return array("erro" => false, "description" => "Nenhum aluno foi encontrado
+       com mais {$time} segundos de inscrição em um curso.", "students" => 0);
     }
   }
 
-  // Matricula o aluno em todos os módulos passados na array, o módulo irá ser identificado por shortname
+  // Matricula o aluno em todos os módulos passados na array, o módulo irá ser
+  // identificado por shortname
   public function enrolAlunoByModulosShortName($username, $modulos, $matriz){
     $size = sizeof($modulos);
     $sql = "";
     for( $i = 0; $i < $size; $i++ ){
       $timecreated = time();
       $shortnamecourse = $modulos[$i];
-      $sql .= "INSERT INTO enrolments (shortnamecourse, username, shortnamerole, matriz, timecreated)
-                VALUES ('{$shortnamecourse}', '{$username}', 'student', {$matriz}, {$timecreated});";
+      $sql .= "INSERT INTO enrolments (shortnamecourse, username, shortnamerole,
+         matriz, timecreated) VALUES ('{$shortnamecourse}', '{$username}',
+           'student', {$matriz}, {$timecreated});";
     }
     if($this->conn->multi_query($sql)){
-      return array("erro" => false, "description" => "O aluno '{$username}' foi matriculado com sucesso nas disciplinas(courses), referente à matriz '{$matriz}'");
+      return array("erro" => false, "description" => "O aluno '{$username}'
+      foi matriculado com sucesso nas disciplinas(courses), referente à matriz '{$matriz}'");
     }else{
-      return array("erro" => true, "description" => "O aluno '{$username}' não foi matriculado nas disciplinas(courses), referente à matriz '{$matriz}'", "more" => $this->conn->error);
+      return array("erro" => true, "description" => "O aluno '{$username}'
+      não foi matriculado nas disciplinas(courses), referente à matriz '{$matriz}'",
+      "more" => $this->conn->error);
     }
   }
 }

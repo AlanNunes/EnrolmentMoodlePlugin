@@ -10,16 +10,18 @@
 Class Categories {
   private $id;
   private $name;
+  private $table_prefix;
   private $conn;
 
-  public function __construct($conn){
+  public function __construct($conn, $table_prefix){
     $this->conn = $conn;
+    $this->table_prefix;
   }
 
   // This method only return categories wich has any course
   public function getCategories(){
-    $sql = "SELECT DISTINCT cat.id, cat.name, cat.idnumber FROM mdl_course_categories cat
-              INNER JOIN mdl_course c ON cat.id = c.category";
+    $sql = "SELECT DISTINCT cat.id, cat.name, cat.idnumber FROM {$this->table_prefix}course_categories cat
+              INNER JOIN {$this->table_prefix}course c ON cat.id = c.category";
     $result = $this->conn->query($sql);
     $categories;
     if($result->num_rows > 0){
@@ -36,8 +38,8 @@ Class Categories {
   // Pelo padrão do UGB, essas categorias selecionadas vão ser sempre os períodos
   // Recolhe todos os períodos(categorias)
   public function getPeriodosParents(){
-    $sql = "SELECT DISTINCT cat.parent FROM mdl_course_categories cat
-            INNER JOIN mdl_course c ON cat.id = c.category";
+    $sql = "SELECT DISTINCT cat.parent FROM {$this->table_prefix}course_categories cat
+            INNER JOIN {$this->table_prefix}course c ON cat.id = c.category";
     $result = $this->conn->query($sql);
     if($result->num_rows > 0){
       while($row = $result->fetch_assoc()){
@@ -58,7 +60,7 @@ Class Categories {
       $periodos = $responsePeriodos['periodos'];
       foreach($periodos as $periodo){
         $parent = $periodo['parent'];
-        $sql = "SELECT id, name, idnumber FROM mdl_course_categories WHERE id = {$parent}";
+        $sql = "SELECT id, name, idnumber FROM {$this->table_prefix}course_categories WHERE id = {$parent}";
         $result = $this->conn->query($sql);
         if($result->num_rows > 0){
           $row = $result->fetch_assoc();
@@ -73,8 +75,8 @@ Class Categories {
 
   // Pega todos os cursos e períodos da categoria do curso que for passada como parâmetro
   public function getCursosAndPeriodosByCategories($id){
-    $sql = "SELECT cat.id as categoryid, cat.name as categoryname, c.fullname, c.id as idcourse, c.shortname FROM mdl_course_categories cat
-            INNER JOIN mdl_course c ON c.category = cat.id WHERE parent= {$id} ORDER BY cat.id";
+    $sql = "SELECT cat.id as categoryid, cat.name as categoryname, c.fullname, c.id as idcourse, c.shortname FROM {$this->table_prefix}course_categories cat
+            INNER JOIN {$this->table_prefix}course c ON c.category = cat.id WHERE parent= {$id} ORDER BY cat.id";
     $result = $this->conn->query($sql);
     if($result->num_rows > 0){
       while($row = $result->fetch_assoc()){

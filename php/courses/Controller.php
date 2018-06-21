@@ -28,7 +28,7 @@ function getCoursesByCategory(){
     $db = new DataBase("moodle");
     $conn = $db->getConnection();
 
-    $courses = new Courses($conn);
+    $courses = new Courses($conn, 'mdl_');
     $coursesList = $courses->getCoursesByCategory($idCategory);
 
     echo json_encode($coursesList);

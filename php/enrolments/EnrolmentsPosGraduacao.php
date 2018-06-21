@@ -62,7 +62,7 @@ Class EnrolmentsPosGraduacao extends Enrolments{
   // Ou seja, é só para a Pós-Graduação porque os alunos da Pós podem estar inscritos no course no banco do moodle porém não estar inscrito na tabela de enrolments no banco de dados externo
   // Pois os alunos da Pós, ao término do curso, são retirados do banco externo e automaticamente desativado do banco do moodle, porém não é excluído
   public function getStudentsNotSubscribedInAnyCourse(){
-    $sql = "SELECT DISTINCT username, lastname, firstname, email FROM mdl_user u WHERE id NOT IN (SELECT userid FROM mdl_user_enrolments) AND u.lastname LIKE '%POS%' AND u.lastname LIKE '%EAD%'";
+    $sql = "SELECT DISTINCT username, lastname, firstname, email FROM {$this->table_prefix}user u WHERE id NOT IN (SELECT userid FROM {$this->table_prefix}user_enrolments) AND u.lastname LIKE '%POS%' AND u.lastname LIKE '%EAD%'";
     $result = $this->conn->query($sql);
     if($result->num_rows > 0){
       while($student = $result->fetch_assoc()){

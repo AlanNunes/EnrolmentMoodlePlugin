@@ -40,19 +40,19 @@ $connMoodle = $dbMoodle->getConnection();
 *
 * Create an instance for Enrolments
 */
-$enrolments = new Enrolments($connMoodle);
+$enrolments = new Enrolments($connMoodle, 'mdl_');
 /**
 * Enrolments
 *
 * Create an instance for Enrolments from Graduação
 */
-$enrolmentsGraduacao = new EnrolmentsGraduacao($connMoodle);
+$enrolmentsGraduacao = new EnrolmentsGraduacao($connMoodle, 'mdl_');
 /**
 * Enrolments
 *
 * Create an instance for Enrolments from Pós-Graduação
 */
-$enrolmentsPosGraduacao = new EnrolmentsPosGraduacao($connMoodle);
+$enrolmentsPosGraduacao = new EnrolmentsPosGraduacao($connMoodle, 'mdl_');
 /**
 * Grades
 *
@@ -198,7 +198,7 @@ function matriculaAlunoPosEAD($student, $course){
   *
   * Create an instance for Enrolments
   */
-  $enrolments = new Enrolments($GLOBALS['connMoodle']);
+  $enrolments = new Enrolments($GLOBALS['connMoodle'], 'mdl_');
   /**
   * Grades - Matrizes
   *
@@ -268,7 +268,7 @@ function matriculaAlunoPosEAD($student, $course){
 
 function matriculaAlunoGraduacao($student, $course, $periodo){
   // Create an instance for Enrolments
-  $enrolments = new Enrolments($GLOBALS['connExternal']);
+  $enrolments = new Enrolments($GLOBALS['connExternal'], 'mdl_');
   // Cria uma instância da Classe Grades(matrizes)
   $grades = new Grades($GLOBALS['connExternal']);
   // Create an instance of Modulos with connection to external database
