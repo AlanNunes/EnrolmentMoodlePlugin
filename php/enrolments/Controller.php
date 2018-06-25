@@ -8,6 +8,7 @@
  * @copyright  2018 Dual Dev
  */
 include_once('../database/DataBase.php');
+include_once('../config/Config.php');
 include_once('Enrolments.php');
 include_once('EnrolmentsGraduacao.php');
 include_once('EnrolmentsPosGraduacao.php');
@@ -40,19 +41,19 @@ $connMoodle = $dbMoodle->getConnection();
 *
 * Create an instance for Enrolments
 */
-$enrolments = new Enrolments($connMoodle, 'mdl_');
+$enrolments = new Enrolments($connMoodle, Config::$table_prefix);
 /**
 * Enrolments
 *
 * Create an instance for Enrolments from Graduação
 */
-$enrolmentsGraduacao = new EnrolmentsGraduacao($connMoodle, 'mdl_');
+$enrolmentsGraduacao = new EnrolmentsGraduacao($connMoodle, Config::$table_prefix);
 /**
 * Enrolments
 *
 * Create an instance for Enrolments from Pós-Graduação
 */
-$enrolmentsPosGraduacao = new EnrolmentsPosGraduacao($connMoodle, 'mdl_');
+$enrolmentsPosGraduacao = new EnrolmentsPosGraduacao($connMoodle, Config::$table_prefix);
 /**
 * Grades
 *
@@ -198,7 +199,7 @@ function matriculaAlunoPosEAD($student, $course){
   *
   * Create an instance for Enrolments
   */
-  $enrolments = new Enrolments($GLOBALS['connMoodle'], 'mdl_');
+  $enrolments = new Enrolments($GLOBALS['connMoodle'], Config::$table_prefix);
   /**
   * Grades - Matrizes
   *
@@ -251,7 +252,7 @@ function matriculaAlunoPosEAD($student, $course){
       $mail->to = $student['email'];
       $greeting = welcome(date('H'));
       $mail->saudacao = "{$greeting} <strong>{$firstname}</strong> !";
-      $mail->msg = "<br/>Você foi matriculada no curso {$course} e já possui acesso ao NEAD.<br/><strong>Att.</strong>";
+      $mail->msg = "<br/>Você foi matriculado(a) no curso {$course} e já possui acesso ao NEAD.<br/><strong>Att.</strong>";
       $mail->setConfig();
       // $mail->sendMail();
       // Fim de envio de e-mail
@@ -268,7 +269,7 @@ function matriculaAlunoPosEAD($student, $course){
 
 function matriculaAlunoGraduacao($student, $course, $periodo){
   // Create an instance for Enrolments
-  $enrolments = new Enrolments($GLOBALS['connExternal'], 'mdl_');
+  $enrolments = new Enrolments($GLOBALS['connExternal'], Config::$table_prefix);
   // Cria uma instância da Classe Grades(matrizes)
   $grades = new Grades($GLOBALS['connExternal']);
   // Create an instance of Modulos with connection to external database
@@ -313,7 +314,7 @@ function matriculaAlunoGraduacao($student, $course, $periodo){
         $greeting = welcome(date('H'));
         $mail->saudacao = "{$greeting} <strong>{$firstname}</strong> !";
         $mail->subject = "NEAD - UGB/FERP";
-        $mail->msg = "<br/>Você foi matriculada no curso {$course} e já possui acesso ao NEAD.<br/><strong>Att.</strong>";
+        $mail->msg = "<br/>Você foi matriculado(a) no curso {$course} e já possui acesso ao NEAD.<br/><strong>Att.</strong>";
         $mail->setConfig();
         // $mail->sendMail();
         // Fim de envio de e-mail

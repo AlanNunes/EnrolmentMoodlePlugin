@@ -1,5 +1,6 @@
 <?php
 require_once("../php/database/DataBase.php");
+require_once("../php/config/Config.php");
 require_once("../php/categories/Categories.php");
 require_once("../php/modalidades_de_cursos/Modalidades_de_Cursos.php");
 
@@ -12,7 +13,7 @@ $db = new DataBase("external_enrolment");
 $connExternal = $db->getConnection();
 
 // Instance of Categories
-$categories = new Categories($connMoodle);
+$categories = new Categories($connMoodle, Config::$table_prefix);
 
 // Instance of Modalidades de Cursos
 $modalidades = new Modalidades_de_Cursos($connExternal);

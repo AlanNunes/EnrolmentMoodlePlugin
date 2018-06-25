@@ -9,6 +9,7 @@
  */
 require_once('Courses.php');
 require_once('../database/DataBase.php');
+require_once('../config/Config.php');
 
 switch ($_POST["action"]) {
   // It calls the function to register the Grade(Matriz, grade curricular)
@@ -28,7 +29,7 @@ function getCoursesByCategory(){
     $db = new DataBase("moodle");
     $conn = $db->getConnection();
 
-    $courses = new Courses($conn, 'mdl_');
+    $courses = new Courses($conn, Config::$table_prefix);
     $coursesList = $courses->getCoursesByCategory($idCategory);
 
     echo json_encode($coursesList);

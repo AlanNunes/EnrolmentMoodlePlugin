@@ -15,7 +15,7 @@ Class Categories {
 
   public function __construct($conn, $table_prefix){
     $this->conn = $conn;
-    $this->table_prefix;
+    $this->table_prefix = $table_prefix;
   }
 
   // This method only return categories wich has any course
