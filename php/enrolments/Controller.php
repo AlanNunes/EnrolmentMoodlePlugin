@@ -136,7 +136,24 @@ if($studentsNotEnrolledsGraduacao['students']){
       list($city, $course, $horario, $tipo, $periodo) = explode("-", $student['lastname']);
       if( $course != 'EDU' )
       {
+        /**
+        * $city É a cidade, por exemplo VR; BP; NI;
+        * $course É o nome abreviado do curso, exemplo: SIS; ADM; BIO; NUT
+        * $horario É o turno, por exemplo: Noturno e Matutino.
+        * Porém na string horário se encontra valores deste jeito: N18.1; M18.1
+        * e como só queremos o 'N' ou 'M' para identificar o turno, fazemos
+        * $horario[0]
+        */
         $course = $city . '-' . $course . '-' . $horario[0];
+      }
+      else if ($course == 'EDU')
+      {
+        /**
+        * Neste scopo, o $horario passa a ser o tipo de curso, por exemplo
+        * licenciatura ou bacharelado.
+        * E o $tipo passa a ser o turno (Noturno e Matutino)
+        */
+        $course = $city . '-' . $course . '-' . $horario . '-' . $tipo[0];
       }
       // Pega somente o número do período
       $periodo = preg_replace("/[^0-9]/", '', $periodo);

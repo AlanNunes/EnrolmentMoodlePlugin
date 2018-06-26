@@ -27,20 +27,19 @@
  foreach ($studentsNotEnrolledsGraduacao['students'] as $student)
  {
    // Checa somente o lastname do usuário com este username
-   if ($student['username'] == 'rosenclever')
+   if ($student['username'] == '2018101794')
    {
      $lastname = $student['lastname'];
      list($city, $course, $horario, $tipo, $periodo) = explode("-", $student['lastname']);
-     if( $course != 'DIR' && $course != 'EDU' )
-     {
-       $course = $city . '-' . $course;
-     }
-     else if ($course == 'DIR' OR $course == 'EDU')
+     if( $course != 'EDU' )
      {
        $course = $city . '-' . $course . '-' . $horario[0];
      }
-
-     $expected = 'VR-ENC';
+     else if ($course == 'EDU')
+     {
+       $course = $city . '-' . $course . '-' . $horario . '-' . $tipo[0];
+     }
+     $expected = 'BP-EDU-L-N';
      try {
        if ( $course === $expected )
        {
