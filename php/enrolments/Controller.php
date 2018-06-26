@@ -89,7 +89,8 @@ if($studentsNotEnrolledsPosGrad['students']){
     * It assumes that the student's lastnme has this default: 'CITY-COURSE'
     * Example: 'VR-SIS'
     */
-    list($city, $modalidade, $course) = explode("-", $student['lastname']);
+    list($city, $tipoCurso, $course, $modalidade) = explode("-", $student['lastname']);
+    $course = $tipoCurso . '-' . $course . '-' . $modalidade;
     /**
     * Enrolments
     *
@@ -133,6 +134,10 @@ if($studentsNotEnrolledsGraduacao['students']){
       * Example: 'VR-SIS-N18.1-REG-1PER'
       */
       list($city, $course, $horario, $tipo, $periodo) = explode("-", $student['lastname']);
+      if( $course != 'EDU' )
+      {
+        $course = $city . '-' . $course . '-' . $horario[0];
+      }
       // Pega somente o número do período
       $periodo = preg_replace("/[^0-9]/", '', $periodo);
       /**

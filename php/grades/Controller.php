@@ -52,7 +52,7 @@ function registerGrade(){
       $conn = $db->getConnection();
 
       $grade = new Grades($conn);
-      $courses = new Courses($conn);
+      $courses = new Courses($conn, '');
       // Pega o id do curso, na tabela de cursos do Banco de Dados Externo
       // PS.: O shortname do curso na tabela do BD externo deve ser o mesmo de idnumber, da categoria que identifica
       // o curso, no Moodle
@@ -85,7 +85,7 @@ function getGrades(){
   $db = new DataBase("external_enrolment");
   $conn = $db->getConnection();
 
-  $grade = new Grades($conn);
+  $grade = new Grades($conn, '');
   $response = $grade->getGrades();
 
   echo json_encode($response);

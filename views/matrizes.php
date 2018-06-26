@@ -144,7 +144,7 @@ $modalidades = new Modalidades_de_Cursos($connExternal);
               opt = document.createElement('option');
               opt.setAttribute('value', cursos[i].id);
               opt.setAttribute('data-idnumber', cursos[i].idnumber);
-              nome = document.createTextNode(cursos[i].name);
+              nome = document.createTextNode(cursos[i].name + "  -  " + cursos[i].idnumber);
               opt.appendChild(nome);
               document.getElementById("cursos").appendChild(opt);
             }
