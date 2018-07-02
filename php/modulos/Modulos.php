@@ -42,7 +42,7 @@ Class Modulos {
       }
       return array('erro' => false, 'description' => 'Os módulos foram encontrados.', 'modulos' => $modulos);
     }else{
-      return array('erro' => true, 'description' => 'Nenhum módulo foi encontrado referente à matriz {$id}.', 'more' => $this->conn->error);
+      return array('erro' => true, 'description' => 'Nenhum módulo foi encontrado referente à matriz {$id}.', 'more' => $sql);
     }
   }
 }

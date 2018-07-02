@@ -207,7 +207,19 @@ $modalidades = new Modalidades_de_Cursos($connExternal);
       cursos = periodos[i].childNodes;
       cursosSize = cursos.length;
       cursosOrdem[i] = new Array();
-      // O j começa no 1 porque sempre tem uma label na posição 1, é padrão
+      // A primeira posição fica o número do Período
+      // Verifica se o resultado é um número ou não
+      // Pois quando é Pós-Graduação EaD, o valor é um 'M' de módulo
+      // E caso seja 'M' o período é igual à '1', pois não existe períodos em
+      // Pós-Graduação
+      if (isNaN(periodos[i].childNodes[0].innerHTML[0]))
+      {
+        cursosOrdem[i].push(1);
+      }
+      else
+      {
+        cursosOrdem[i].push(periodos[i].childNodes[0].innerHTML[0]);
+      }
       for( j = 1; j < cursosSize; j++ ){
         cursosOrdem[i].push(cursos[j].data);
       }

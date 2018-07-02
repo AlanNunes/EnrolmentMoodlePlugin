@@ -41,9 +41,9 @@ Class Grades {
     for( $i = 0; $i < $periodos; $i++ ){
       $cursosSize = sizeof($cursos[$i]);
       // Caminha por todos os cursos, dentro do período
-      for( $j = 0; $j < $cursosSize; $j++ ){
+      for( $j = 1; $j < $cursosSize; $j++ ){
         $shortnamecourse = $cursos[$i][$j];
-        $periodo = $i+1;
+        $periodo = $cursos[$i][0];
         $sql .= "INSERT INTO modulos (matriz, sortorder, shortnamecourse, periodo) VALUES ({$matriz}, {$j}, '{$shortnamecourse}', {$periodo});";
       } // Fim Cursos
     }// Fim Período

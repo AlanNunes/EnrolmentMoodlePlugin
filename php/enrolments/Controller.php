@@ -153,10 +153,12 @@ if($studentsNotEnrolledsGraduacao['students']){
         * licenciatura ou bacharelado.
         * E o $tipo passa a ser o turno (Noturno e Matutino)
         */
+        list($city, $course, $horario, $tipo, $regular, $periodo) = explode("-", $student['lastname']);
         $course = $city . '-' . $course . '-' . $horario . '-' . $tipo[0];
       }
       // Pega somente o número do período
       $periodo = preg_replace("/[^0-9]/", '', $periodo);
+      echo "<h1>Período: {$periodo}</h1>";
       /**
       * Enrolments
       *
