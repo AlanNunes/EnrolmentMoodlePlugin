@@ -91,6 +91,7 @@ if($studentsNotEnrolledsPosGrad['students']){
     */
     list($city, $tipoCurso, $course, $modalidade) = explode("-", $student['lastname']);
     $course = $tipoCurso . '-' . $course . '-' . $modalidade;
+    echo "<h1>ENTROU AQUIIII</h1>{$username}";
     /**
     * Enrolments
     *
@@ -181,8 +182,8 @@ $enrolmentsPosGraduacao->conn = $connExternal;
 * Gets all the students that has the time expired by the paramater
 * @param integer Limit time of enrolment
 */
-$studentsPosGradExpiredTime = $enrolmentsPosGraduacao->getStudentsByTimeEnrolment(60*5);
-echo '<p>Estudantes da Pós-Graduação com mais de {60*1} segundos inscritos num curso</p>'; // TDD
+$studentsPosGradExpiredTime = $enrolmentsPosGraduacao->getStudentsByTimeEnrolment(60*60*24);
+echo '<p>Estudantes da Pós-Graduação com mais de {60*60*24} segundos inscritos num curso</p>'; // TDD
 var_dump($studentsPosGradExpiredTime); // TDD
 
 /**
