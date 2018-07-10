@@ -33,7 +33,7 @@ $connExternal = $dbExternal->getConnection();
 *
 * Connect to moodle database
 */
-$dbMoodle = new DataBase("moodle_prod_atual");
+$dbMoodle = new DataBase("moodle");
 $connMoodle = $dbMoodle->getConnection();
 
 /**
@@ -194,20 +194,42 @@ if($studentsPosGradExpiredTime['students']){
     // It switches the database connection to 'External Database'
     $enrolments->conn = $GLOBALS['connExternal'];
     echo "<h1>shortnamecourse: ".$student['shortnamecourse']."</h1>"; // TDD
-    /**
-    * Enrolments
-    *
-    * Enrol the student in the next course(módulo)
-    * @param string username Student's username
-    * @param string shortnamecourse Course's shortname
-    * @param integer matriz Matriz(Grade) to be enrolled
-    * @return array It returns a colletions of information about the process
-    */
-    $enrolmentsPosGraduacao->enrolInNextCourse($student['username'], $student['shortnamecourse'], $student['matriz']);
-    /**
-    * Execute the sync
-    */
-    exec("php ".$GLOBALS['sync_path']);
+    $boletim = new Boletim($GLOBALS['connMoodle']);
+    $boletim->username = $student['username'];
+    $boletim->courseshortname = $student['shortnamecourse'];
+    // Se o aluno tiver atingido médio superior ou equivalente a 70 naquele curso
+    if ($boletim->getMedia() >= 70)
+    {
+      /**
+      * Enrolments
+      *
+      * Enrol the student in the next course(módulo)
+      * @param string username Student's username
+      * @param string shortnamecourse Course's shortname
+      * @param integer matriz Matriz(Grade) to be enrolled
+      * @return array It returns a colletions of information about the process
+      */
+      $enrolmentsPosGraduacao->enrolInNextCourse($student['username'], $student['shortnamecourse'], $student['matriz']);
+      /**
+      * Execute the sync
+      */
+      exec("php ".$GLOBALS['sync_path']);
+    }
+    else
+    {
+      $matricula = $student['username'];
+      // Manda e-mail aos admins avisando que a aluno não foi aprovada
+      $mail = new Outlook_Mails();
+      $mail->to = "nead@ugb.edu.br";
+      $greeting = welcome(date('H'));
+      $mail->saudacao = "{$greeting} <strong>{$firstname}</strong> !";
+      $mail->msg = "<br/>O aluno(a) com a matrícula {$username} completou seus 30
+      dias de curso. Porém a mesma não foi aprovada pois tirou média inferior a 70
+      <br/><strong>Att.</strong>";
+      $mail->setConfig();
+      $mail->sendMail();
+      // Fim de envio de e-mail
+    }
   }
 }
 
@@ -279,7 +301,7 @@ function matriculaAlunoPosEAD($student, $course){
       $mail->saudacao = "{$greeting} <strong>{$firstname}</strong> !";
       $mail->msg = "<br/>Você foi matriculado(a) no curso {$course} e já possui acesso ao NEAD.<br/><strong>Att.</strong>";
       $mail->setConfig();
-      // $mail->sendMail();
+      $mail->sendMail();
       // Fim de envio de e-mail
     }
     // Execute the sync.php
@@ -341,7 +363,7 @@ function matriculaAlunoGraduacao($student, $course, $periodo){
         $mail->subject = "NEAD - UGB/FERP";
         $mail->msg = "<br/>Você foi matriculado(a) no curso {$course} e já possui acesso ao NEAD.<br/><strong>Att.</strong>";
         $mail->setConfig();
-        // $mail->sendMail();
+        $mail->sendMail();
         // Fim de envio de e-mail
         echo json_encode($enrolmentResponse);
       }

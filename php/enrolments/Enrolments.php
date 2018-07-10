@@ -50,9 +50,9 @@ Class Enrolments {
   // Get the time when the student was enrolled in the course
   public function getEnrolmentInfo($shortname){
     $sql = "SELECT c.id,c.shortname, c.sortorder, ue.timecreated
-    FROM moodle_prod_atual.{$this->table_prefix}user_enrolments ue
-    INNER JOIN moodle_prod_atual.{$this->table_prefix}enrol e ON ue.enrolid = e.id
-    INNER JOIN moodle_prod_atual.{$this->table_prefix}course c ON c.id = e.courseid
+    FROM moodle.{$this->table_prefix}user_enrolments ue
+    INNER JOIN moodle.{$this->table_prefix}enrol e ON ue.enrolid = e.id
+    INNER JOIN moodle.{$this->table_prefix}course c ON c.id = e.courseid
     AND c.shortname = '$shortname'";
     $result = $this->conn->query($sql);
     if($result->num_rows > 0){
@@ -102,10 +102,10 @@ Class Enrolments {
   // Esta função recolhe todos os alunos que estão matriculados em um curso por
   // mais de um tempo específico, passado como parâmetro $time
   public function getStudentsByTimeEnrolment($time){
-    $sql = "SELECT ue.timecreated, u.username FROM moodle_prod_atual.{$this->table_prefix}user_enrolments ue
-     INNER JOIN moodle_prod_atual.{$this->table_prefix}enrol e ON ue.enrolid = e.id
-            INNER JOIN moodle_prod_atual.{$this->table_prefix}course c ON c.id = e.courseid
-            INNER JOIN moodle_prod_atual.{$this->table_prefix}user u ON u.id = ue.userid
+    $sql = "SELECT ue.timecreated, u.username FROM moodle.{$this->table_prefix}user_enrolments ue
+     INNER JOIN moodle.{$this->table_prefix}enrol e ON ue.enrolid = e.id
+            INNER JOIN moodle.{$this->table_prefix}course c ON c.id = e.courseid
+            INNER JOIN moodle.{$this->table_prefix}user u ON u.id = ue.userid
               AND (unix_timestamp() - ue.timecreated) > {$time}";
     $result = $this->conn->query($sql);
     if($result->num_rows > 0){

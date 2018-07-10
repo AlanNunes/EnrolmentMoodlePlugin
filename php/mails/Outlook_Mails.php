@@ -76,8 +76,8 @@ class Outlook_Mails implements Mails{
     $this->host = "smtp.live.com";
     $this->SMTPAuth = true;
     $this->port = 587;
-    $this->account = "alannunes@ugb.edu.br";
-    $this->password = "";
+    $this->account = "nead@ugb.edu.br";
+    $this->password = "Ead@vr321";
     $this->SMTPSecure = 'tls';
     $this->from = "alannunes@ugb.edu.br";
     $this->from_name = "Alan Nunes";
