@@ -4,8 +4,8 @@ Class EnrolmentsGraduacao extends Enrolments{
 
 
   public function getStudentsNotSubscribedInAnyCourse(){
-    $sql = "select distinct username, lastname, firstname, email from moodle.{$this->table_prefix}user u where u.id not in (select userid from moodle.{$this->table_prefix}user_enrolments ue
-            INNER JOIN moodle.{$this->table_prefix}enrol en ON en.id = ue.enrolid INNER JOIN moodle.{$this->table_prefix}course c ON c.id = en.courseid
+    $sql = "select distinct username, lastname, firstname, email from moodle_prod_atual.{$this->table_prefix}user u where u.id not in (select userid from moodle_prod_atual.{$this->table_prefix}user_enrolments ue
+            INNER JOIN moodle_prod_atual.{$this->table_prefix}enrol en ON en.id = ue.enrolid INNER JOIN moodle_prod_atual.{$this->table_prefix}course c ON c.id = en.courseid
               INNER JOIN external_enrolment.enrolments enr ON enr.shortnamecourse = c.shortname) AND u.lastname NOT LIKE '%POS-EAD%'";
     $result = $this->conn->query($sql);
     if($result->num_rows > 0){

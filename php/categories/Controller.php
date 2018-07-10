@@ -28,7 +28,7 @@ switch ($_POST["action"]) {
 
 // Retorna as categorias dos cursos
 function getCursosCategories(){
-  $db = new DataBase("moodle");
+  $db = new DataBase("moodle_prod_atual");
   $conn = $db->getConnection();
 
   $categories = new Categories($conn, Config::$table_prefix);
@@ -41,7 +41,7 @@ function getCursosAndPeriodosByCategories(){
   if(isset($_POST["idCategory"]) && !empty($_POST["idCategory"])){
     $id = $_POST["idCategory"];
 
-    $db = new DataBase("moodle");
+    $db = new DataBase("moodle_prod_atual");
     $conn = $db->getConnection();
 
     $categories = new Categories($conn, Config::$table_prefix);

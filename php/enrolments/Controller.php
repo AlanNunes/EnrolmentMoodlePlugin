@@ -33,7 +33,7 @@ $connExternal = $dbExternal->getConnection();
 *
 * Connect to moodle database
 */
-$dbMoodle = new DataBase("moodle");
+$dbMoodle = new DataBase("moodle_prod_atual");
 $connMoodle = $dbMoodle->getConnection();
 
 /**

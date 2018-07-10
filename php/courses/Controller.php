@@ -26,7 +26,7 @@ function getCoursesByCategory(){
   if(isset($_POST["idCategory"]) && !empty($_POST["idCategory"])){
     $idCategory = $_POST["idCategory"];
 
-    $db = new DataBase("moodle");
+    $db = new DataBase("moodle_prod_atual");
     $conn = $db->getConnection();
 
     $courses = new Courses($conn, Config::$table_prefix);
