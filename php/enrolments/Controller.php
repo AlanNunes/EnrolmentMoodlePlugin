@@ -15,6 +15,7 @@ include_once('EnrolmentsPosGraduacao.php');
 include_once('../grades/Grades.php');
 include_once('../modulos/Modulos.php');
 include_once('../mails/Outlook_Mails.php');
+include_once('../boletins/Boletim.php');
 
 /**
 * Define o path do sync

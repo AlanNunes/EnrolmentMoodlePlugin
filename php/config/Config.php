@@ -13,6 +13,6 @@ class Config
   /**
   * @var string Specifys the table prefix (for Moodle database)
   */
-  public static $table_prefix = "mdl_prod_atual_";
+  public static $table_prefix = "mdl_";
 }
  ?>
